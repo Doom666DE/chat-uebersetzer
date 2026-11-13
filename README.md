@@ -26,7 +26,7 @@ Die EXE ist unsigniert. Windows SmartScreen kann den Download oder den Start als
 
 - **Oberfläche.** Wähle oben **Deutsch** oder **English**. Die App merkt sich die Auswahl für den nächsten Start.
 - **Lesen.** Wähle die **Lesesprache** und markiere Text in Discord oder WhatsApp. Ein Doppelklick versucht, die ganze Nachricht zu erfassen.
-- **Antwort schreiben.** Tippe deinen Entwurf. Wenn die App die markierte Nachricht als Deutsch, Englisch, Polnisch oder Türkisch erkennt, wählt sie diese **Zielsprache** für die fertige Antwort. Du kannst sie manuell ändern.
+- **Antwort schreiben.** Tippe deinen Entwurf. Bei einer markierten Nachricht wählt die App die erkannte **Zielsprache** aus Deutsch, Englisch, Polnisch und Türkisch. Bei unklarer Sprache wählst du das Ziel selbst.
 - **Antwortvorschläge.** Wähle die **Vorschlagssprache** und klicke auf **3 Antworten vorschlagen**, sobald die markierte Nachricht übersetzt ist. Mit **Übernehmen** setzt du einen Vorschlag in den Entwurf.
 - **Abschicken.** Klicke auf **Übersetzen**, prüfe die Fassung und wähle **Antwort kopieren**. Füge sie mit **Strg + V** in Discord oder WhatsApp ein und sende sie dort selbst.
 
@@ -53,10 +53,12 @@ Die App liest mit Windows UI Automation den Text deiner Auswahl aus dem geöffne
 Die folgenden Befehle sind für PowerShell auf Windows x64 gedacht. Installiere zuerst [uv](https://docs.astral.sh/uv/getting-started/installation/), öffne eine neue PowerShell und wechsle in den Ordner mit dieser README.
 
 ```powershell
-uv venv --managed-python --python 3.14.7
+uv venv --managed-python --python 3.14.10
 uv pip sync --python .venv\Scripts\python.exe requirements-build.txt
 .\.venv\Scripts\python.exe chat_uebersetzer.py
 ```
+
+Die Regressionstests laufen mit `.\.venv\Scripts\python.exe -m unittest discover -s tests`.
 
 Zum Erstellen der Windows-Datei verwende dieselbe Umgebung.
 

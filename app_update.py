@@ -26,7 +26,7 @@ import win32event
 import win32file
 
 
-VERSION = "0.5.9"
+VERSION = "0.5.10"
 REPO = "Doom666DE/chat-uebersetzer"
 ASSET = "Chat-Uebersetzer-win-x64.exe"
 API = f"https://api.github.com/repos/{REPO}/releases/latest"
@@ -213,6 +213,18 @@ def replace_executable(source, target, backup):
             time.sleep(0.25)
 
 
+def restore_executable(backup, target, failed):
+    if target.exists():
+        try:
+            replace_executable(backup, target, failed)
+            return
+        except pywintypes.error as error:
+            if error.winerror != 1177 or target.exists():
+                raise
+    # ReplaceFileW can move the existing EXE away before reporting failure.
+    backup.rename(target)
+
+
 def staging_folder(folder, target):
     return folder.parent == target.parent and re.fullmatch(r"\.chat-update-[a-z0-9_]+", folder.name)
 
@@ -239,7 +251,6 @@ def apply_update(arguments):
         return True
     next_app = None
     ready = None
-    replaced = False
     started = False
     try:
         with source.open("rb") as payload:
@@ -251,7 +262,6 @@ def apply_update(arguments):
         wait_for_exit(int(old_pid), target, 15000)
         wait_for_exit(int(loader_pid), target, 15000)
         replace_executable(source, target, backup)
-        replaced = True
         next_app = start_independently([str(target), "--update-ready", event, folder.name, str(os.getppid())])
         deadline = time.monotonic() + 45
         while win32event.WaitForSingleObject(ready, 300) != win32event.WAIT_OBJECT_0:
@@ -259,13 +269,13 @@ def apply_update(arguments):
                 raise OSError("The updated translator did not start")
         started = True
     except (OSError, ValueError, pywintypes.error):
-        restored = not replaced
-        if replaced:
+        restored = target.is_file() and not backup.exists()
+        if backup.is_file():
             try:
                 if next_app is not None and next_app.poll() is None:
                     next_app.terminate()
                     next_app.wait(timeout=5)
-                replace_executable(backup, target, failed)
+                restore_executable(backup, target, failed)
                 restored = True
             except (OSError, subprocess.TimeoutExpired, pywintypes.error):
                 pass
@@ -275,11 +285,17 @@ def apply_update(arguments):
             except OSError:
                 pass
         if language == "de":
-            message = ("Das Update ist fehlgeschlagen. Die vorherige Version ist weiterhin vorhanden."
-                       if restored else f"Das Update ist fehlgeschlagen. Die Sicherung liegt unter\n{backup}")
+            message = "Das Update ist fehlgeschlagen."
+            if restored:
+                message += " Die vorherige Version ist weiterhin vorhanden."
+            elif backup.is_file():
+                message += f" Die Sicherung liegt unter\n{backup}"
         else:
-            message = ("The update failed. The previous version is still available."
-                       if restored else f"The update failed. The backup is at\n{backup}")
+            message = "The update failed."
+            if restored:
+                message += " The previous version is still available."
+            elif backup.is_file():
+                message += f" The backup is at\n{backup}"
         win32api.MessageBox(0, message, "Chat-Update", win32con.MB_OK | win32con.MB_ICONERROR)
     finally:
         if ready is not None:

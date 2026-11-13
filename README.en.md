@@ -42,7 +42,7 @@ Get-FileHash -Algorithm SHA256 .\Chat-Uebersetzer-win-x64.exe
 ## Use the app
 
 1. **Read a message.** Choose a **Reading language** in **Read**, then select message text in Discord Desktop or WhatsApp Desktop. You can also double-click a word to translate the full message when the app can identify it.
-2. **Write a reply.** Open **Write a reply** and type your draft. If the selected message is recognized as German, English, Polish, or Turkish, the app selects that **Target language** for the outgoing reply. You can change it. To translate an English draft into German, select **German**.
+2. **Write a reply.** Open **Write a reply** and type your draft. If the selected message is recognized as German, English, Polish, or Turkish, the app selects that **Target language**. If the language is unclear, choose the target yourself. To translate an English draft into German, select **German**.
 3. **Use a suggestion.** Choose a **Suggestion language** and click **Suggest 3 replies** once the selected message has been translated. Click **Use reply** to put a suggestion in the draft field.
 4. **Translate and copy.** Click **Translate**, review or edit the result, then click **Copy reply**. Paste it into the chat using **Ctrl + V** and send it there.
 
