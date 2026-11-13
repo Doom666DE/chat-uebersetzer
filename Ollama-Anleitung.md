@@ -1,5 +1,7 @@
 # Ollama unter Windows einrichten
 
+[English setup guide](README.en.md)
+
 Ollama stellt das für den Chat-Übersetzer benötigte Sprachmodell auf deinem PC bereit. Für den ersten Download brauchst du Internet und freien Speicher. Das Modell belegt rund **2,5 GB**. Ollama selbst benötigt zusätzlichen Platz. [Ollama für Windows](https://docs.ollama.com/windows) · [Modellseite](https://ollama.com/library/qwen3:4b-instruct)
 
 ## 1. Ollama installieren

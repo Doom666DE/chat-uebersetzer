@@ -1,10 +1,20 @@
 # Chat-Übersetzer für Windows
 
+[**Windows-EXE herunterladen**](https://github.com/Doom666DE/chat-uebersetzer/releases/download/v0.1.0/Chat-Uebersetzer-win-x64.exe) · [**Einrichtung auf Deutsch**](Ollama-Anleitung.md) · [**English setup guide**](README.en.md) · [Release v0.1.0](https://github.com/Doom666DE/chat-uebersetzer/releases/tag/v0.1.0)
+
 Übersetze ausgewählte Nachrichten aus Discord Desktop und WhatsApp Desktop auf Deutsch. Schreibe deine Antwort auf Deutsch und übersetze sie vor dem Abschicken ins Englische, Polnische oder Türkische. Die Übersetzung und die Antwortvorschläge laufen mit Ollama auf deinem PC.
+
+## So sieht die App aus
+
+| Nachrichten lesen | Antworten übersetzen | Antworten vorschlagen |
+| --- | --- | --- |
+| <img src="docs/screenshots/lesen.png" alt="Reiter Lesen mit einer deutschen Übersetzung" width="300"> | <img src="docs/screenshots/antwort-schreiben.png" alt="Deutscher Entwurf und fertige englische Antwort im Reiter Antwort schreiben" width="300"> | <img src="docs/screenshots/antwortvorschlaege.png" alt="Dialog mit drei deutschen Antwortvorschlägen und Übernehmen-Schaltflächen" width="250"> |
+
+Die Screenshots zeigen Beispielnachrichten.
 
 ## Download und Einrichtung
 
-1. Lade unter **Releases** die neueste Vorabversion herunter. Öffne unter **Assets** die Datei **Chat-Uebersetzer-win-x64.exe**. Du kannst sie in einen Ordner deiner Wahl legen.
+1. Lade die [Windows-EXE](https://github.com/Doom666DE/chat-uebersetzer/releases/download/v0.1.0/Chat-Uebersetzer-win-x64.exe) herunter und speichere sie in einem Ordner deiner Wahl.
 2. Installiere [Ollama für Windows](https://ollama.com/download/windows) und lade das Modell nach der [Schritt-für-Schritt-Anleitung](Ollama-Anleitung.md).
 3. Starte **Chat-Uebersetzer-win-x64.exe**, sobald Ollama läuft und das Modell heruntergeladen ist.
 
