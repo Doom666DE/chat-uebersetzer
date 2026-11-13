@@ -2,7 +2,7 @@
 
 [**Windows-EXE herunterladen**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) · [**Einrichtung auf Deutsch**](Ollama-Anleitung.md) · [**English setup guide**](README.en.md) · [Aktueller Release](https://github.com/Doom666DE/chat-uebersetzer/releases/latest)
 
-Übersetze ausgewählte Nachrichten aus Discord Desktop und WhatsApp Desktop. Für eingehende Übersetzungen und Antwortvorschläge kannst du unabhängig voneinander Deutsch, Englisch, Polnisch oder Türkisch wählen. Deine fertigen Antworten kannst du vor dem Abschicken ins Englische, Polnische oder Türkische übersetzen. Ollama läuft auf deinem PC.
+Übersetze ausgewählte Nachrichten aus Discord Desktop und WhatsApp Desktop. Für eingehende Übersetzungen, Antwortvorschläge und fertige Antworten kannst du unabhängig voneinander Deutsch, Englisch, Polnisch oder Türkisch wählen. Ollama läuft auf deinem PC.
 
 ## So sieht die App aus
 
@@ -26,7 +26,7 @@ Die EXE ist unsigniert. Windows SmartScreen kann den Download oder den Start als
 
 - **Oberfläche.** Wähle oben **Deutsch** oder **English**. Die App merkt sich die Auswahl für den nächsten Start.
 - **Lesen.** Wähle die **Lesesprache** und markiere Text in Discord oder WhatsApp. Ein Doppelklick versucht, die ganze Nachricht zu erfassen.
-- **Antwort schreiben.** Tippe deinen Entwurf. Wenn die App die markierte Nachricht als Englisch, Polnisch oder Türkisch erkennt, wählt sie diese **Zielsprache** für die fertige Antwort. Du kannst sie manuell ändern.
+- **Antwort schreiben.** Tippe deinen Entwurf. Wenn die App die markierte Nachricht als Deutsch, Englisch, Polnisch oder Türkisch erkennt, wählt sie diese **Zielsprache** für die fertige Antwort. Du kannst sie manuell ändern.
 - **Antwortvorschläge.** Wähle die **Vorschlagssprache** und klicke auf **3 Antworten vorschlagen**, sobald die markierte Nachricht übersetzt ist. Mit **Übernehmen** setzt du einen Vorschlag in den Entwurf.
 - **Abschicken.** Klicke auf **Übersetzen**, prüfe die Fassung und wähle **Antwort kopieren**. Füge sie mit **Strg + V** in Discord oder WhatsApp ein und sende sie dort selbst.
 

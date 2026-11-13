@@ -2,7 +2,7 @@
 
 [**Download the Windows EXE**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) · [Latest release](https://github.com/Doom666DE/chat-uebersetzer/releases/latest) · [Deutsch](README.md)
 
-Chat Translator works alongside Discord Desktop and WhatsApp Desktop. Choose German, English, Polish, or Turkish separately for incoming translations and the three reply suggestions. Translate outgoing drafts into English, Polish, or Turkish. Ollama runs the language model on your PC.
+Chat Translator works alongside Discord Desktop and WhatsApp Desktop. Choose German, English, Polish, or Turkish separately for incoming translations, reply suggestions, and outgoing replies. Ollama runs the language model on your PC.
 
 Choose **English** from the **Interface** menu at the top of the window. On a German interface, the menu is called **Oberfläche**. **Reading language** and **Suggestion language** follow the interface by default, so both use English when the interface is in English. The app remembers your choices.
 
@@ -42,7 +42,7 @@ Get-FileHash -Algorithm SHA256 .\Chat-Uebersetzer-win-x64.exe
 ## Use the app
 
 1. **Read a message.** Choose a **Reading language** in **Read**, then select message text in Discord Desktop or WhatsApp Desktop. You can also double-click a word to translate the full message when the app can identify it.
-2. **Write a reply.** Open **Write a reply** and type your draft. If the selected message is recognized as English, Polish, or Turkish, the app selects that **Target language** for the outgoing reply. You can change it.
+2. **Write a reply.** Open **Write a reply** and type your draft. If the selected message is recognized as German, English, Polish, or Turkish, the app selects that **Target language** for the outgoing reply. You can change it. To translate an English draft into German, select **German**.
 3. **Use a suggestion.** Choose a **Suggestion language** and click **Suggest 3 replies** once the selected message has been translated. Click **Use reply** to put a suggestion in the draft field.
 4. **Translate and copy.** Click **Translate**, review or edit the result, then click **Copy reply**. Paste it into the chat using **Ctrl + V** and send it there.
 
