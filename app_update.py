@@ -25,7 +25,7 @@ import win32event
 import win32file
 
 
-VERSION = "0.5.6"
+VERSION = "0.5.7"
 REPO = "Doom666DE/chat-uebersetzer"
 ASSET = "Chat-Uebersetzer-win-x64.exe"
 API = f"https://api.github.com/repos/{REPO}/releases/latest"
