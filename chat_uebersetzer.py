@@ -4,11 +4,13 @@ import ctypes
 import json
 import os
 import queue
+import shutil
+import sys
 import threading
 import time
 import tkinter as tk
 from pathlib import Path
-from tkinter import font, ttk
+from tkinter import font, messagebox, ttk
 from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
@@ -22,6 +24,7 @@ import win32event
 import win32gui
 import win32process
 
+import app_update
 from interface_text import TEXT as INTERFACE_TEXT
 
 INTERFACE_LANGUAGES = {"de": "Deutsch", "en": "English"}
@@ -686,11 +689,16 @@ class TranslatorWindow:
         self.selection = None
         self.last_success = None
         self.dock = None
+        self.available_update = None
+        self.update_cancel = threading.Event()
+        self.closing_after_download = False
+        self.update_state = "idle"
         self.build_controls()
         threading.Thread(target=watch_mouse, args=(self.events, self.enabled, self.quit_event), daemon=True).start()
         threading.Thread(target=self.translate_jobs, daemon=True).start()
         root.protocol("WM_DELETE_WINDOW", self.close)
         root.after(45, self.read_events)
+        root.after(800, self.check_updates_automatically)
 
     def text(self, key, **fields):
         return INTERFACE_TEXT[key][self.interface == "en"].format(**fields)
@@ -798,8 +806,9 @@ class TranslatorWindow:
         self.interface_picker.set(INTERFACE_LANGUAGES[self.interface])
         self.interface_picker.pack(side="left", padx=6)
         self.interface_picker.bind("<<ComboboxSelected>>", self.change_interface)
+        self.build_update_controls(panel, settings)
         self.tabs = ttk.Notebook(panel, style="Chat.TNotebook")
-        self.tabs.pack(fill="both", expand=True, pady=(14, 0))
+        self.tabs.pack(fill="both", expand=True, pady=(10, 0))
         reading = tk.Frame(self.tabs, bg=BACKGROUND)
         reply = tk.Frame(self.tabs, bg=BACKGROUND)
         self.tabs.add(reading, text=self.text("read"))
@@ -815,6 +824,101 @@ class TranslatorWindow:
         self.show_text(self.text("placeholder"))
         self.set_status(self.status, "instructions")
         self.build_reply(reply)
+
+    def build_update_controls(self, panel, settings):
+        self.update_check = self.label(ttk.Button(settings, command=self.check_updates), "update_check")
+        self.update_check.pack(side="right")
+        row = tk.Frame(panel, bg=BACKGROUND)
+        row.pack(fill="x", pady=(4, 0))
+        tk.Label(row, text=f"v{app_update.VERSION}", fg=MUTED, bg=BACKGROUND,
+                 font=("Segoe UI", 9)).pack(side="left", padx=(0, 6))
+        self.update_status = tk.Label(row, fg=ACCENT, bg=BACKGROUND, font=("Segoe UI", 9),
+                                      anchor="w", justify="left", wraplength=170)
+        self.update_status.pack(side="left", fill="x", expand=True)
+        self.update_install = self.label(ttk.Button(row, command=self.install_update), "update_install")
+
+    def check_updates(self):
+        if self.update_state != "idle":
+            return
+        self.update_state = "checking"
+        self.update_check.configure(state="disabled")
+        self.update_install.configure(state="disabled")
+        self.set_status(self.update_status, "update_checking")
+
+        def work():
+            try:
+                self.events.put(("update_checked", app_update.check_release()))
+            except Exception:
+                self.events.put(("update_check_failed",))
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def check_updates_automatically(self):
+        self.check_updates()
+        self.root.after(6 * 60 * 60 * 1000, self.check_updates_automatically)
+
+    def install_update(self):
+        if self.update_state != "idle" or self.available_update is None or not app_update.is_portable():
+            return
+        release = self.available_update
+        self.update_state = "downloading"
+        self.update_check.configure(state="disabled")
+        self.update_install.configure(state="disabled")
+        self.update_cancel.clear()
+        self.set_status(self.update_status, "update_downloading")
+
+        def work():
+            try:
+                staged = app_update.download_update(release, Path(sys.executable), self.update_cancel)
+                self.events.put(("update_downloaded", staged, release))
+            except Exception:
+                self.events.put(("update_download_failed",))
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def update_event(self, kind, data):
+        if kind == "update_checked":
+            self.available_update, = data
+            if self.available_update is None:
+                self.update_install.pack_forget()
+                self.set_status(self.update_status, "update_current")
+            else:
+                portable = app_update.is_portable()
+                key = "update_available" if portable else "update_source"
+                self.set_status(self.update_status, key, version=self.available_update.tag)
+                if portable:
+                    self.update_install.pack(side="right")
+        elif kind == "update_check_failed":
+            self.set_status(self.update_status, kind)
+        elif kind == "update_download_failed":
+            if not self.closing_after_download:
+                self.set_status(self.update_status, kind)
+        elif kind == "update_downloaded":
+            staged, release = data
+            try:
+                if not self.closing_after_download:
+                    restart = not self.has_reply_draft() or messagebox.askokcancel(
+                        self.text("update_title"), self.text("update_draft"), parent=self.root,
+                    )
+                    if restart and not self.closing_after_download:
+                        app_update.launch_installer(staged, release, self.interface)
+                        self.update_state = "idle"
+                        self.close()
+                        return True
+                    self.set_status(self.update_status, "update_available", version=release.tag)
+            except OSError:
+                self.set_status(self.update_status, "update_download_failed")
+            shutil.rmtree(staged.parent, ignore_errors=True)
+        self.update_state = "idle"
+        self.update_check.configure(state="normal")
+        self.update_install.configure(state="normal")
+        if self.closing_after_download:
+            self.close()
+            return True
+        return False
+
+    def has_reply_draft(self):
+        return any(field.get("1.0", "end-1c").strip() for field in (self.draft, self.reply_output))
 
     def text_field(self, parent, state="normal"):
         reader = tk.Frame(parent, bg=SURFACE)
@@ -1196,6 +1300,9 @@ class TranslatorWindow:
                 self.enabled.clear()
                 self.toggle.configure(state="disabled")
                 self.set_status(self.status, "watch_error")
+            elif kind.startswith("update_"):
+                if self.update_event(kind, data):
+                    return
             elif data[0] == "suggestions":
                 if self.suggestion_window is not None and data[1] == self.suggestion_number:
                     self.show_suggestions(kind, data[2])
@@ -1230,6 +1337,11 @@ class TranslatorWindow:
         self.root.after(45, self.read_events)
 
     def close(self):
+        if self.update_state == "downloading":
+            self.closing_after_download = True
+            self.update_cancel.set()
+            self.set_status(self.update_status, "update_cancelling")
+            return
         self.quit_event.set()
         self.cancel_job.set()
         self.reply_cancel.set()
@@ -1255,6 +1367,7 @@ def main():
         return
     root = tk.Tk()
     TranslatorWindow(root)
+    root.after_idle(app_update.signal_ready, sys.argv[1:])
     root.mainloop()
     mutex.Close()
 

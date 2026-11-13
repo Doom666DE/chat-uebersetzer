@@ -48,6 +48,12 @@ Get-FileHash -Algorithm SHA256 .\Chat-Uebersetzer-win-x64.exe
 
 **Pause** pauses automatic selection capture. **Resume** turns it back on. Translations and suggestions can contain errors, so review the draft before sending.
 
+## Updates
+
+Starting with v0.5.0, the app checks for stable GitHub releases at startup and every six hours while open. Click **Check for updates** to check manually. When an update is available, **Install** downloads the Windows EXE, checks its SHA-256 hash against GitHub's release metadata, and restarts the app. You need write access to the folder containing the EXE.
+
+The app asks before restarting if a reply is open. Your language settings are kept. Update checks and downloads connect to GitHub without sending chat messages or drafts.
+
 ## Troubleshooting
 
 | Problem | What to do |
