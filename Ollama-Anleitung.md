@@ -39,7 +39,7 @@ ollama run qwen3:4b-instruct "Übersetze ins Deutsche: Thank you for your help."
 
 ## 4. Chat-Übersetzer starten
 
-1. Lade **Chat-Uebersetzer-win-x64.exe** unter **Releases → Assets** herunter und starte sie per Doppelklick.
+1. Lade [**Chat-Uebersetzer-win-x64.exe**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) herunter und starte sie per Doppelklick. Oben kannst du die **Oberfläche** auf Deutsch oder Englisch stellen.
 2. Öffne Discord Desktop oder WhatsApp Desktop und markiere einen Satz, zum Beispiel „Thank you for your help.“
 3. Im Reiter **Lesen** erscheint die deutsche Fassung. Beim ersten Auftrag kann die Antwort langsamer kommen, weil Ollama das Modell erst lädt.
 4. Für deine eigene Antwort öffnest du **Antwort schreiben**. Dort kannst du die Zielsprache überprüfen, eine deutsche Antwort tippen oder einen Vorschlag übernehmen und die fertige Übersetzung kopieren.

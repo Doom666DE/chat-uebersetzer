@@ -1,14 +1,14 @@
 # Chat Translator for Windows
 
-[**Download the Windows EXE**](https://github.com/Doom666DE/chat-uebersetzer/releases/download/v0.1.0/Chat-Uebersetzer-win-x64.exe) · [Release v0.1.0](https://github.com/Doom666DE/chat-uebersetzer/releases/tag/v0.1.0) · [Deutsch](README.md)
+[**Download the Windows EXE**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) · [Latest release](https://github.com/Doom666DE/chat-uebersetzer/releases/latest) · [Deutsch](README.md)
 
 Chat Translator works alongside Discord Desktop and WhatsApp Desktop. It translates selected messages into German, suggests three possible replies in German, and translates your draft into English, Polish, or Turkish. Ollama runs the language model on your PC.
 
-**The app interface and incoming translations are in German.** This guide uses the German button labels so you can find them easily.
+Choose **English** from the **Interface** menu at the top of the window. On a German interface, the menu is called **Oberfläche**. The app remembers your choice. Incoming translations and reply suggestions are in German.
 
 | Read a message | Translate a reply | Pick a suggestion |
 | --- | --- | --- |
-| <img src="docs/screenshots/lesen.png" alt="Reading tab showing a German translation" width="300"> | <img src="docs/screenshots/antwort-schreiben.png" alt="Reply tab showing a German draft and its English translation" width="300"> | <img src="docs/screenshots/antwortvorschlaege.png" alt="Dialog with three German reply suggestions" width="250"> |
+| <img src="docs/screenshots/read.png" alt="English Read tab showing a German translation" width="300"> | <img src="docs/screenshots/write-a-reply.png" alt="English reply tab showing a German draft and its English translation" width="300"> | <img src="docs/screenshots/reply-suggestions.png" alt="English dialog with three German reply suggestions" width="250"> |
 
 ## Set up Ollama
 
@@ -31,9 +31,9 @@ The EXE is built for **Windows x64** and includes Python. Discord and WhatsApp w
 
    The model list should include `qwen3:4b-instruct` with ID **0edcdef34593**. The second command prints the version of the local Ollama service.
 
-4. Download and launch [**Chat-Uebersetzer-win-x64.exe**](https://github.com/Doom666DE/chat-uebersetzer/releases/download/v0.1.0/Chat-Uebersetzer-win-x64.exe). Keep Ollama running while using the translator. The first translation can take longer while the model loads.
+4. Download and launch [**Chat-Uebersetzer-win-x64.exe**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe). Keep Ollama running while using the translator. The first translation can take longer while the model loads.
 
-The EXE is unsigned. Windows SmartScreen may show a warning for an unrecognized app. To check the download, compare the hash from the command below with [SHA256SUMS.txt](https://github.com/Doom666DE/chat-uebersetzer/releases/download/v0.1.0/SHA256SUMS.txt). [Microsoft SmartScreen documentation](https://learn.microsoft.com/windows/apps/package-and-deploy/smartscreen-reputation)
+The EXE is unsigned. Windows SmartScreen may show a warning for an unrecognized app. To check the download, compare the hash from the command below with [SHA256SUMS.txt](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/SHA256SUMS.txt). [Microsoft SmartScreen documentation](https://learn.microsoft.com/windows/apps/package-and-deploy/smartscreen-reputation)
 
 ```powershell
 Get-FileHash -Algorithm SHA256 .\Chat-Uebersetzer-win-x64.exe
@@ -41,12 +41,12 @@ Get-FileHash -Algorithm SHA256 .\Chat-Uebersetzer-win-x64.exe
 
 ## Use the app
 
-1. **Read a message.** In Discord Desktop or WhatsApp Desktop, drag over the text you want to translate. You can also double-click a word in a message to translate the full message when the app can identify it. The German translation appears in **Lesen**.
-2. **Write a reply.** Open **Antwort schreiben** and type your reply in German. The **Zielsprache** menu selects the detected language if the selected message is recognized as English, Polish, or Turkish. You can change the selection. If detection is inconclusive, the app keeps the current choice.
-3. **Use a suggestion.** Once the message has been translated into German, click **3 Antworten vorschlagen**. Pick a direct reply, a friendly reply, or a follow-up question. Click **Übernehmen** to put it in the draft field.
-4. **Translate and copy.** Click **Übersetzen**, review or edit the result, then click **Antwort kopieren**. Paste it into the chat using **Ctrl + V** and send it there.
+1. **Read a message.** In Discord Desktop or WhatsApp Desktop, drag over the text you want to translate. You can also double-click a word in a message to translate the full message when the app can identify it. The German translation appears in **Read**.
+2. **Write a reply.** Open **Write a reply** and type your reply in German. The **Target language** menu selects the detected language if the selected message is recognized as English, Polish, or Turkish. You can change the selection. If detection is inconclusive, the app keeps the current choice.
+3. **Use a suggestion.** Once the message has been translated into German, click **Suggest 3 replies**. Pick a direct reply, a friendly reply, or a follow-up question. Click **Use reply** to put it in the draft field.
+4. **Translate and copy.** Click **Translate**, review or edit the result, then click **Copy reply**. Paste it into the chat using **Ctrl + V** and send it there.
 
-**Pausieren** pauses automatic selection capture. **Aktivieren** resumes it. Translations and suggestions can contain errors, so review the draft before sending.
+**Pause** pauses automatic selection capture. **Resume** turns it back on. Translations and suggestions can contain errors, so review the draft before sending.
 
 ## Troubleshooting
 
@@ -57,6 +57,6 @@ Get-FileHash -Algorithm SHA256 .\Chat-Uebersetzer-win-x64.exe
 | The app cannot find the model | Run `ollama pull qwen3:4b-instruct` and wait for it to finish. Check the result with `ollama list`. |
 | The model ID differs | This release checks for the tested model version **0edcdef34593**. If the ID on the [model page](https://ollama.com/library/qwen3:4b-instruct) has changed, the app needs an update for that model version. |
 | Windows reports a missing `VCRUNTIME140.dll` or `MSVCP140.dll` | Install the [Microsoft Visual C++ Redistributable for x64](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist) and try again. |
-| Selecting text has no effect | Click **Aktivieren** if it is visible, then select plain message text in the desktop app. App updates can change how Discord and WhatsApp expose message text. |
+| Selecting text has no effect | Click **Resume** if it is visible, then select plain message text in the desktop app. App updates can change how Discord and WhatsApp expose message text. |
 
 The translator reads selected text through Windows UI Automation and passes it to the local Ollama service at `127.0.0.1:11434`. The translator keeps its working text in memory. Copying a reply puts it in the Windows clipboard. For build instructions and license information, see the [project README](README.md#aus-dem-quellcode-starten-oder-bauen).

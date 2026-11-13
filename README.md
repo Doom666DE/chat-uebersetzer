@@ -1,6 +1,6 @@
 # Chat-Übersetzer für Windows
 
-[**Windows-EXE herunterladen**](https://github.com/Doom666DE/chat-uebersetzer/releases/download/v0.1.0/Chat-Uebersetzer-win-x64.exe) · [**Einrichtung auf Deutsch**](Ollama-Anleitung.md) · [**English setup guide**](README.en.md) · [Release v0.1.0](https://github.com/Doom666DE/chat-uebersetzer/releases/tag/v0.1.0)
+[**Windows-EXE herunterladen**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) · [**Einrichtung auf Deutsch**](Ollama-Anleitung.md) · [**English setup guide**](README.en.md) · [Aktueller Release](https://github.com/Doom666DE/chat-uebersetzer/releases/latest)
 
 Übersetze ausgewählte Nachrichten aus Discord Desktop und WhatsApp Desktop auf Deutsch. Schreibe deine Antwort auf Deutsch und übersetze sie vor dem Abschicken ins Englische, Polnische oder Türkische. Die Übersetzung und die Antwortvorschläge laufen mit Ollama auf deinem PC.
 
@@ -14,16 +14,17 @@ Die Screenshots zeigen Beispielnachrichten.
 
 ## Download und Einrichtung
 
-1. Lade die [Windows-EXE](https://github.com/Doom666DE/chat-uebersetzer/releases/download/v0.1.0/Chat-Uebersetzer-win-x64.exe) herunter und speichere sie in einem Ordner deiner Wahl.
+1. Lade die [Windows-EXE](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) herunter und speichere sie in einem Ordner deiner Wahl.
 2. Installiere [Ollama für Windows](https://ollama.com/download/windows) und lade das Modell nach der [Schritt-für-Schritt-Anleitung](Ollama-Anleitung.md).
 3. Starte **Chat-Uebersetzer-win-x64.exe**, sobald Ollama läuft und das Modell heruntergeladen ist.
 
-Die Testversion ist für **Windows x64** gebaut. Discord und WhatsApp wurden unter Windows 11 getestet. Die EXE bringt Python mit und nutzt die [Microsoft Visual C++ Laufzeit für x64](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist). Wenn sie auf deinem PC noch fehlt, installiere sie über Microsoft.
+Die App ist für **Windows x64** gebaut. Discord und WhatsApp wurden unter Windows 11 getestet. Die EXE bringt Python mit und nutzt die [Microsoft Visual C++ Laufzeit für x64](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist). Wenn sie auf deinem PC noch fehlt, installiere sie über Microsoft.
 
 Die EXE ist unsigniert. Windows SmartScreen kann den Download oder den Start als unbekannte App kennzeichnen. Die Release-Datei `SHA256SUMS.txt` enthält die Prüfsumme der EXE zur Kontrolle des Downloads. [Microsoft zu SmartScreen](https://learn.microsoft.com/windows/apps/package-and-deploy/smartscreen-reputation)
 
 ## Bedienung
 
+- **Oberfläche.** Wähle oben **Deutsch** oder **English**. Die App merkt sich die Auswahl für den nächsten Start.
 - **Lesen.** Markiere mit der Maus Text in Discord Desktop oder WhatsApp Desktop. Ein Doppelklick auf den Nachrichtentext versucht, die ganze Nachricht zu erfassen. Die deutsche Übersetzung erscheint im Fenster neben dem Chat.
 - **Antwort schreiben.** Schreibe deinen Entwurf auf Deutsch. Wenn du zuvor eine englische, polnische oder türkische Nachricht markiert hast, wählt die App die erkannte Zielsprache aus. Bei uneindeutigem Text bleibt die bisherige Auswahl stehen. Du kannst die Sprache manuell ändern.
 - **Antwortvorschläge.** Klicke auf **3 Antworten vorschlagen**, sobald die deutsche Übersetzung der markierten Nachricht fertig ist. Wähle **Kurz und direkt**, **Freundlich** oder **Mit Rückfrage** und bearbeite den übernommenen Entwurf.
