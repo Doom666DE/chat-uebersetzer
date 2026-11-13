@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 import ctypes
 from ctypes import wintypes
+from datetime import date, datetime
 import hashlib
 import json
 import os
@@ -25,7 +26,7 @@ import win32event
 import win32file
 
 
-VERSION = "0.5.7"
+VERSION = "0.5.8"
 REPO = "Doom666DE/chat-uebersetzer"
 ASSET = "Chat-Uebersetzer-win-x64.exe"
 API = f"https://api.github.com/repos/{REPO}/releases/latest"
@@ -43,6 +44,7 @@ class Release:
     digest: str
     size: int
     notes: str = ""
+    published_on: date | None = None
 
     @property
     def page_url(self):
@@ -52,6 +54,17 @@ class Release:
 def version_parts(value):
     if isinstance(value, str) and re.fullmatch(r"v?[0-9]{1,6}\.[0-9]{1,6}\.[0-9]{1,6}", value):
         return tuple(map(int, value.removeprefix("v").split(".")))
+    return None
+
+
+def release_date(value):
+    if isinstance(value, str):
+        try:
+            timestamp = datetime.fromisoformat(value)
+            if timestamp.tzinfo is not None:
+                return timestamp.astimezone().date()
+        except (ValueError, OverflowError, OSError):
+            pass
     return None
 
 
@@ -74,7 +87,9 @@ def newer_release(data, installed=VERSION):
             and type(size) is int and 0 < size <= MAX_SIZE
         ):
             notes = data.get("body")
-            return Release(tag, url, digest[7:], size, notes.strip() if isinstance(notes, str) else "")
+            return Release(tag, url, digest[7:], size,
+                           notes.strip() if isinstance(notes, str) else "",
+                           release_date(data.get("published_at")))
     raise ValueError("No verifiable Windows asset in release")
 
 

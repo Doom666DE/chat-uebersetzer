@@ -56,6 +56,8 @@ The app asks before restarting if a reply is open. Your language settings are ke
 
 Starting with v0.5.4, select **What's new** when an update is available to read its GitHub release notes in the app. Starting with v0.5.6, select **Open GitHub release** in the preview to view the full release page in your default browser.
 
+Starting with v0.5.8, the update notice and preview show the publication date in your local time zone and the download size of the Windows EXE.
+
 ## Troubleshooting
 
 | Problem | What to do |

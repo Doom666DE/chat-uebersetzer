@@ -40,6 +40,8 @@ Beim Schreiben einer Antwort fragt die App vor dem Neustart nach. Sprach­einste
 
 Ab v0.5.4 zeigt **Änderungen** bei einem verfügbaren Update die GitHub-Release-Notizen direkt in der App. Ab v0.5.6 öffnet **GitHub-Release öffnen** in dieser Vorschau die vollständige Release-Seite im Standardbrowser.
 
+Ab v0.5.8 siehst du das Veröffentlichungsdatum in deiner lokalen Zeitzone und die Downloadgröße der Windows-EXE schon beim Update-Hinweis und in der Vorschau.
+
 ## Lokale Verarbeitung
 
 Die App liest mit Windows UI Automation den Text deiner Auswahl aus dem geöffneten Fenster. Die einzige Verbindung für Übersetzung, Spracherkennung und Antwortvorschläge geht an Ollama auf `127.0.0.1:11434`. Die App benötigt dafür weder Discord- noch WhatsApp-Zugangsdaten. Sie speichert die Texte im Arbeitsspeicher. **Antwort kopieren** schreibt deinen fertigen Text in die Windows-Zwischenablage.

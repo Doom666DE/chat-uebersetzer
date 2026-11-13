@@ -725,6 +725,8 @@ class TranslatorWindow:
         self.root.title(self.text("title"))
         for widget, key in self.labels:
             widget.configure(text=self.text(key))
+        if self.available_update is not None:
+            self.update_details.configure(text=self.release_details(self.available_update))
         self.toggle.configure(text=self.text("pause" if self.enabled.is_set() else "enable"))
         self.tabs.tab(0, text=self.text("read"))
         self.tabs.tab(1, text=self.text("write"))
@@ -838,9 +840,34 @@ class TranslatorWindow:
                                       anchor="w", justify="left", wraplength=170)
         self.update_status.pack(side="left", fill="x", expand=True)
         self.update_actions = tk.Frame(panel, bg=BACKGROUND)
+        self.update_details = self.release_details_label(self.update_actions)
+        self.update_details.pack(fill="x", pady=(0, 4))
         self.update_notes = self.label(ttk.Button(self.update_actions, command=self.show_update_notes), "update_notes")
         self.update_notes.pack(side="left")
         self.update_install = self.label(ttk.Button(self.update_actions, command=self.install_update), "update_install")
+
+    def release_details(self, release):
+        english = self.interface == "en"
+        if release.published_on is None:
+            publication = self.text("update_date_unknown")
+        else:
+            pattern = "%Y-%m-%d" if english else "%d.%m.%Y"
+            publication = self.text("update_published", date=release.published_on.strftime(pattern))
+        if release.size >= 1_000_000:
+            size = f"{release.size / 1_000_000:.1f} MB"
+        elif release.size >= 1_000:
+            size = f"{release.size / 1_000:.1f} kB"
+        else:
+            size = f"{release.size} B"
+        if not english:
+            size = size.replace(".", ",")
+        return self.text("update_details", publication=publication, size=size)
+
+    def release_details_label(self, parent):
+        label = tk.Label(parent, fg=MUTED, bg=BACKGROUND,
+                         font=("Segoe UI", 9), anchor="w", justify="left")
+        label.bind("<Configure>", lambda event: label.configure(wraplength=event.width))
+        return label
 
     def show_update_notes(self):
         release = self.available_update
@@ -859,6 +886,9 @@ class TranslatorWindow:
         window.bind("<Escape>", lambda _event: self.close_update_notes())
         panel = tk.Frame(window, bg=BACKGROUND, padx=16, pady=14)
         panel.pack(fill="both", expand=True)
+        details = self.release_details_label(panel)
+        details.configure(text=self.release_details(release))
+        details.pack(fill="x", pady=(0, 8))
         actions = tk.Frame(panel, bg=BACKGROUND)
         actions.pack(side="bottom", fill="x", pady=(10, 0))
         ttk.Button(actions, text=self.text("update_open_release"),
@@ -944,6 +974,7 @@ class TranslatorWindow:
                 portable = app_update.is_portable()
                 key = "update_available" if portable else "update_source"
                 self.set_status(self.update_status, key, version=self.available_update.tag)
+                self.update_details.configure(text=self.release_details(release))
                 self.update_actions.pack(fill="x", pady=(4, 0), before=self.tabs)
                 if portable:
                     self.update_install.pack(side="right")
