@@ -690,6 +690,7 @@ class TranslatorWindow:
         self.last_success = None
         self.dock = None
         self.available_update = None
+        self.update_notes_window = None
         self.update_cancel = threading.Event()
         self.closing_after_download = False
         self.update_state = "idle"
@@ -835,7 +836,48 @@ class TranslatorWindow:
         self.update_status = tk.Label(row, fg=ACCENT, bg=BACKGROUND, font=("Segoe UI", 9),
                                       anchor="w", justify="left", wraplength=170)
         self.update_status.pack(side="left", fill="x", expand=True)
-        self.update_install = self.label(ttk.Button(row, command=self.install_update), "update_install")
+        self.update_actions = tk.Frame(panel, bg=BACKGROUND)
+        self.update_notes = self.label(ttk.Button(self.update_actions, command=self.show_update_notes), "update_notes")
+        self.update_notes.pack(side="left")
+        self.update_install = self.label(ttk.Button(self.update_actions, command=self.install_update), "update_install")
+
+    def show_update_notes(self):
+        release = self.available_update
+        if release is None:
+            return
+        if self.update_notes_window is not None:
+            self.update_notes_window.lift()
+            return
+        window = tk.Toplevel(self.root, bg=BACKGROUND)
+        self.update_notes_window = window
+        window.title(self.text("update_notes_title", version=release.tag))
+        window.transient(self.root)
+        window.geometry("500x340")
+        window.minsize(320, 220)
+        window.protocol("WM_DELETE_WINDOW", self.close_update_notes)
+        window.bind("<Escape>", lambda _event: self.close_update_notes())
+        panel = tk.Frame(window, bg=BACKGROUND, padx=16, pady=14)
+        panel.pack(fill="both", expand=True)
+        close = ttk.Button(panel, text=self.text("close"), command=self.close_update_notes)
+        close.pack(side="bottom", anchor="e", pady=(10, 0))
+        field = self.text_field(panel)
+        field.configure(undo=False)
+        field.tag_configure("heading", font=("Segoe UI", 12, "bold"))
+        notes = release.notes or self.text("update_notes_empty")
+        for line in notes.splitlines():
+            heading = line.lstrip("#")
+            if heading != line and heading.startswith(" "):
+                field.insert("end", heading.lstrip() + "\n", "heading")
+            else:
+                field.insert("end", ("• " + line[2:] if line.startswith(("- ", "* ")) else line) + "\n")
+        field.configure(state="disabled")
+        close.focus_set()
+        window.grab_set()
+
+    def close_update_notes(self):
+        if self.update_notes_window is not None:
+            self.update_notes_window.destroy()
+            self.update_notes_window = None
 
     def check_updates(self):
         if self.update_state != "idle":
@@ -878,14 +920,18 @@ class TranslatorWindow:
 
     def update_event(self, kind, data):
         if kind == "update_checked":
-            self.available_update, = data
+            release, = data
+            if self.available_update != release:
+                self.close_update_notes()
+            self.available_update = release
             if self.available_update is None:
-                self.update_install.pack_forget()
+                self.update_actions.pack_forget()
                 self.set_status(self.update_status, "update_current")
             else:
                 portable = app_update.is_portable()
                 key = "update_available" if portable else "update_source"
                 self.set_status(self.update_status, key, version=self.available_update.tag)
+                self.update_actions.pack(fill="x", pady=(4, 0), before=self.tabs)
                 if portable:
                     self.update_install.pack(side="right")
         elif kind == "update_check_failed":

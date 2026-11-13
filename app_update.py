@@ -25,7 +25,7 @@ import win32event
 import win32file
 
 
-VERSION = "0.5.3"
+VERSION = "0.5.4"
 REPO = "Doom666DE/chat-uebersetzer"
 ASSET = "Chat-Uebersetzer-win-x64.exe"
 API = f"https://api.github.com/repos/{REPO}/releases/latest"
@@ -42,6 +42,7 @@ class Release:
     url: str
     digest: str
     size: int
+    notes: str = ""
 
 
 def version_parts(value):
@@ -68,7 +69,8 @@ def newer_release(data, installed=VERSION):
             and isinstance(digest, str) and re.fullmatch(r"sha256:[a-f0-9]{64}", digest)
             and type(size) is int and 0 < size <= MAX_SIZE
         ):
-            return Release(tag, url, digest[7:], size)
+            notes = data.get("body")
+            return Release(tag, url, digest[7:], size, notes.strip() if isinstance(notes, str) else "")
     raise ValueError("No verifiable Windows asset in release")
 
 
