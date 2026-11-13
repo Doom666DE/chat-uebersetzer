@@ -2,13 +2,13 @@
 
 [**Download the Windows EXE**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) · [Latest release](https://github.com/Doom666DE/chat-uebersetzer/releases/latest) · [Deutsch](README.md)
 
-Chat Translator works alongside Discord Desktop and WhatsApp Desktop. It translates selected messages into German, suggests three possible replies in German, and translates your draft into English, Polish, or Turkish. Ollama runs the language model on your PC.
+Chat Translator works alongside Discord Desktop and WhatsApp Desktop. Choose German, English, Polish, or Turkish separately for incoming translations and the three reply suggestions. Translate outgoing drafts into English, Polish, or Turkish. Ollama runs the language model on your PC.
 
-Choose **English** from the **Interface** menu at the top of the window. On a German interface, the menu is called **Oberfläche**. The app remembers your choice. Incoming translations and reply suggestions are in German.
+Choose **English** from the **Interface** menu at the top of the window. On a German interface, the menu is called **Oberfläche**. **Reading language** and **Suggestion language** follow the interface by default, so both use English when the interface is in English. The app remembers your choices.
 
 | Read a message | Translate a reply | Pick a suggestion |
 | --- | --- | --- |
-| <img src="docs/screenshots/read.png" alt="English Read tab showing a German translation" width="300"> | <img src="docs/screenshots/write-a-reply.png" alt="English reply tab showing a German draft and its English translation" width="300"> | <img src="docs/screenshots/reply-suggestions.png" alt="English dialog with three German reply suggestions" width="250"> |
+| <img src="docs/screenshots/read.png" alt="Read tab showing an English translation" width="300"> | <img src="docs/screenshots/write-a-reply.png" alt="English draft and translated reply with separate suggestion and target languages" width="300"> | <img src="docs/screenshots/reply-suggestions.png" alt="Three reply suggestions in English" width="250"> |
 
 ## Set up Ollama
 
@@ -41,9 +41,9 @@ Get-FileHash -Algorithm SHA256 .\Chat-Uebersetzer-win-x64.exe
 
 ## Use the app
 
-1. **Read a message.** In Discord Desktop or WhatsApp Desktop, drag over the text you want to translate. You can also double-click a word in a message to translate the full message when the app can identify it. The German translation appears in **Read**.
-2. **Write a reply.** Open **Write a reply** and type your reply in German. The **Target language** menu selects the detected language if the selected message is recognized as English, Polish, or Turkish. You can change the selection. If detection is inconclusive, the app keeps the current choice.
-3. **Use a suggestion.** Once the message has been translated into German, click **Suggest 3 replies**. Pick a direct reply, a friendly reply, or a follow-up question. Click **Use reply** to put it in the draft field.
+1. **Read a message.** Choose a **Reading language** in **Read**, then select message text in Discord Desktop or WhatsApp Desktop. You can also double-click a word to translate the full message when the app can identify it.
+2. **Write a reply.** Open **Write a reply** and type your draft. If the selected message is recognized as English, Polish, or Turkish, the app selects that **Target language** for the outgoing reply. You can change it.
+3. **Use a suggestion.** Choose a **Suggestion language** and click **Suggest 3 replies** once the selected message has been translated. Click **Use reply** to put a suggestion in the draft field.
 4. **Translate and copy.** Click **Translate**, review or edit the result, then click **Copy reply**. Paste it into the chat using **Ctrl + V** and send it there.
 
 **Pause** pauses automatic selection capture. **Resume** turns it back on. Translations and suggestions can contain errors, so review the draft before sending.

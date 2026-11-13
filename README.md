@@ -2,13 +2,13 @@
 
 [**Windows-EXE herunterladen**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) · [**Einrichtung auf Deutsch**](Ollama-Anleitung.md) · [**English setup guide**](README.en.md) · [Aktueller Release](https://github.com/Doom666DE/chat-uebersetzer/releases/latest)
 
-Übersetze ausgewählte Nachrichten aus Discord Desktop und WhatsApp Desktop auf Deutsch. Schreibe deine Antwort auf Deutsch und übersetze sie vor dem Abschicken ins Englische, Polnische oder Türkische. Die Übersetzung und die Antwortvorschläge laufen mit Ollama auf deinem PC.
+Übersetze ausgewählte Nachrichten aus Discord Desktop und WhatsApp Desktop. Für eingehende Übersetzungen und Antwortvorschläge kannst du unabhängig voneinander Deutsch, Englisch, Polnisch oder Türkisch wählen. Deine fertigen Antworten kannst du vor dem Abschicken ins Englische, Polnische oder Türkische übersetzen. Ollama läuft auf deinem PC.
 
 ## So sieht die App aus
 
 | Nachrichten lesen | Antworten übersetzen | Antworten vorschlagen |
 | --- | --- | --- |
-| <img src="docs/screenshots/lesen.png" alt="Reiter Lesen mit einer deutschen Übersetzung" width="300"> | <img src="docs/screenshots/antwort-schreiben.png" alt="Deutscher Entwurf und fertige englische Antwort im Reiter Antwort schreiben" width="300"> | <img src="docs/screenshots/antwortvorschlaege.png" alt="Dialog mit drei deutschen Antwortvorschlägen und Übernehmen-Schaltflächen" width="250"> |
+| <img src="docs/screenshots/lesen.png" alt="Reiter Lesen mit einer deutschen Übersetzung" width="300"> | <img src="docs/screenshots/antwort-schreiben.png" alt="Deutscher Entwurf und polnische Übersetzung im Reiter Antwort schreiben" width="300"> | <img src="docs/screenshots/antwortvorschlaege.png" alt="Dialog mit drei deutschen Antwortvorschlägen und Übernehmen-Schaltflächen" width="250"> |
 
 Die Screenshots zeigen Beispielnachrichten.
 
@@ -25,10 +25,12 @@ Die EXE ist unsigniert. Windows SmartScreen kann den Download oder den Start als
 ## Bedienung
 
 - **Oberfläche.** Wähle oben **Deutsch** oder **English**. Die App merkt sich die Auswahl für den nächsten Start.
-- **Lesen.** Markiere mit der Maus Text in Discord Desktop oder WhatsApp Desktop. Ein Doppelklick auf den Nachrichtentext versucht, die ganze Nachricht zu erfassen. Die deutsche Übersetzung erscheint im Fenster neben dem Chat.
-- **Antwort schreiben.** Schreibe deinen Entwurf auf Deutsch. Wenn du zuvor eine englische, polnische oder türkische Nachricht markiert hast, wählt die App die erkannte Zielsprache aus. Bei uneindeutigem Text bleibt die bisherige Auswahl stehen. Du kannst die Sprache manuell ändern.
-- **Antwortvorschläge.** Klicke auf **3 Antworten vorschlagen**, sobald die deutsche Übersetzung der markierten Nachricht fertig ist. Wähle **Kurz und direkt**, **Freundlich** oder **Mit Rückfrage** und bearbeite den übernommenen Entwurf.
+- **Lesen.** Wähle die **Lesesprache** und markiere Text in Discord oder WhatsApp. Ein Doppelklick versucht, die ganze Nachricht zu erfassen.
+- **Antwort schreiben.** Tippe deinen Entwurf. Wenn die App die markierte Nachricht als Englisch, Polnisch oder Türkisch erkennt, wählt sie diese **Zielsprache** für die fertige Antwort. Du kannst sie manuell ändern.
+- **Antwortvorschläge.** Wähle die **Vorschlagssprache** und klicke auf **3 Antworten vorschlagen**, sobald die markierte Nachricht übersetzt ist. Mit **Übernehmen** setzt du einen Vorschlag in den Entwurf.
 - **Abschicken.** Klicke auf **Übersetzen**, prüfe die Fassung und wähle **Antwort kopieren**. Füge sie mit **Strg + V** in Discord oder WhatsApp ein und sende sie dort selbst.
+
+Mit **Wie Oberfläche** übernehmen Lese- und Vorschlagssprache automatisch die Oberflächensprache. Feste Einstellungen bleiben beim Wechsel der Oberfläche und nach dem Neustart erhalten.
 
 ## Lokale Verarbeitung
 
