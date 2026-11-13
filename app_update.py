@@ -21,7 +21,7 @@ import win32con
 import win32event
 
 
-VERSION = "0.5.1"
+VERSION = "0.5.2"
 REPO = "Doom666DE/chat-uebersetzer"
 ASSET = "Chat-Uebersetzer-win-x64.exe"
 API = f"https://api.github.com/repos/{REPO}/releases/latest"
@@ -140,8 +140,9 @@ def launch_installer(staged, release, language):
     dll_directory.argtypes = [ctypes.c_wchar_p]
     dll_directory(None)
     try:
+        # The updater must outlive the app, including when the app runs in a Windows job.
         subprocess.Popen([str(windows), "-NoProfile", "-NonInteractive", "-EncodedCommand", encoded],
-                         env=env, creationflags=subprocess.CREATE_NO_WINDOW)
+                         env=env, creationflags=subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB)
     finally:
         dll_directory(str(sys._MEIPASS))
 
