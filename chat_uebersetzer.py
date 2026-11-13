@@ -1352,6 +1352,8 @@ class TranslatorWindow:
 
 
 def main():
+    if app_update.apply_update(sys.argv[1:]):
+        return
     ctypes.windll.user32.SetProcessDpiAwarenessContext(ctypes.c_void_p(-4))
     mutex = win32event.CreateMutex(None, False, "Local\\DiscordChatUebersetzer")
     if win32api.GetLastError() == 183:

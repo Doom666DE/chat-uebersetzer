@@ -11,7 +11,7 @@ GetModule("UIAutomationCore.dll")
 a = Analysis(
     ["chat_uebersetzer.py"],
     hiddenimports=["comtypes.gen.UIAutomationClient"],
-    datas=[("LICENSE", "."), ("third-party", "third-party"), ("apply_update.ps1", ".")],
+    datas=[("LICENSE", "."), ("third-party", "third-party")],
 )
 
 # The Microsoft runtime is installed separately using Microsoft's redistributable.
