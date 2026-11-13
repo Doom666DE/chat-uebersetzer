@@ -9,6 +9,7 @@ import sys
 import threading
 import time
 import tkinter as tk
+import webbrowser
 from pathlib import Path
 from tkinter import font, messagebox, ttk
 from urllib.error import HTTPError, URLError
@@ -858,8 +859,12 @@ class TranslatorWindow:
         window.bind("<Escape>", lambda _event: self.close_update_notes())
         panel = tk.Frame(window, bg=BACKGROUND, padx=16, pady=14)
         panel.pack(fill="both", expand=True)
-        close = ttk.Button(panel, text=self.text("close"), command=self.close_update_notes)
-        close.pack(side="bottom", anchor="e", pady=(10, 0))
+        actions = tk.Frame(panel, bg=BACKGROUND)
+        actions.pack(side="bottom", fill="x", pady=(10, 0))
+        ttk.Button(actions, text=self.text("update_open_release"),
+                   command=lambda: self.open_update_release(release, window)).pack(side="left")
+        close = ttk.Button(actions, text=self.text("close"), command=self.close_update_notes)
+        close.pack(side="right")
         field = self.text_field(panel)
         field.configure(undo=False)
         field.tag_configure("heading", font=("Segoe UI", 12, "bold"))
@@ -873,6 +878,14 @@ class TranslatorWindow:
         field.configure(state="disabled")
         close.focus_set()
         window.grab_set()
+
+    def open_update_release(self, release, window):
+        try:
+            if webbrowser.open_new_tab(release.page_url):
+                return
+        except OSError:
+            pass
+        messagebox.showerror(self.text("update_open_release"), self.text("update_open_failed"), parent=window)
 
     def close_update_notes(self):
         if self.update_notes_window is not None:

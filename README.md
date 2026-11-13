@@ -38,7 +38,7 @@ Ab v0.5.0 prüft die App beim Start und danach alle sechs Stunden auf neue stabi
 
 Beim Schreiben einer Antwort fragt die App vor dem Neustart nach. Sprach­einstellungen bleiben erhalten. Die Update-Prüfung und der Download verbinden sich mit GitHub und übertragen keine Chattexte oder Entwürfe.
 
-Ab v0.5.4 zeigt **Änderungen** bei einem verfügbaren Update die GitHub-Release-Notizen direkt in der App. Du kannst sie lesen, bevor du auf **Installieren** klickst.
+Ab v0.5.4 zeigt **Änderungen** bei einem verfügbaren Update die GitHub-Release-Notizen direkt in der App. Ab v0.5.6 öffnet **GitHub-Release öffnen** in dieser Vorschau die vollständige Release-Seite im Standardbrowser.
 
 ## Lokale Verarbeitung
 

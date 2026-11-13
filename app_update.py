@@ -25,7 +25,7 @@ import win32event
 import win32file
 
 
-VERSION = "0.5.5"
+VERSION = "0.5.6"
 REPO = "Doom666DE/chat-uebersetzer"
 ASSET = "Chat-Uebersetzer-win-x64.exe"
 API = f"https://api.github.com/repos/{REPO}/releases/latest"
@@ -43,6 +43,10 @@ class Release:
     digest: str
     size: int
     notes: str = ""
+
+    @property
+    def page_url(self):
+        return f"{RELEASES}/tag/{self.tag}"
 
 
 def version_parts(value):

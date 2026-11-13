@@ -83,6 +83,8 @@ TEXT = {
     "update_source": ("{version} als Windows-EXE verfügbar", "{version} available as a Windows EXE"),
     "update_notes": ("Änderungen", "What's new"),
     "update_notes_title": ("Änderungen in {version}", "What's new in {version}"),
+    "update_open_release": ("GitHub-Release öffnen", "Open GitHub release"),
+    "update_open_failed": ("Der Browser konnte nicht geöffnet werden.", "Could not open the browser."),
     "update_notes_empty": ("Für diese Version sind keine Änderungen auf GitHub beschrieben.",
                            "GitHub has no release notes for this version."),
     "update_install": ("Installieren", "Install"),

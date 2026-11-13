@@ -54,7 +54,7 @@ Starting with v0.5.0, the app checks for stable GitHub releases at startup and e
 
 The app asks before restarting if a reply is open. Your language settings are kept. Update checks and downloads connect to GitHub without sending chat messages or drafts.
 
-Starting with v0.5.4, select **What's new** when an update is available to read its GitHub release notes in the app before installing it.
+Starting with v0.5.4, select **What's new** when an update is available to read its GitHub release notes in the app. Starting with v0.5.6, select **Open GitHub release** in the preview to view the full release page in your default browser.
 
 ## Troubleshooting
 
