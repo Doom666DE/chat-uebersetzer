@@ -4,6 +4,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import io
 import json
 from pathlib import Path
+import subprocess
+import sys
 from tempfile import TemporaryDirectory
 from threading import Event, Thread
 import tkinter as tk
@@ -144,6 +146,58 @@ class ReplyLanguageTests(unittest.TestCase):
                         bottom = ui.copy_button.winfo_rooty() + ui.copy_button.winfo_height()
                         self.assertLessEqual(bottom, root.winfo_rooty() + root.winfo_height())
                         self.assertGreaterEqual(ui.reply_output.winfo_height(), 30)
+
+    def test_windows_reports_localized_controls_and_reply_text(self):
+        with self.window() as (root, ui):
+            ui.interface_picker.set("English")
+            ui.change_interface()
+            ui.tabs.select(1)
+            ui.draft.insert("1.0", "Morgen um 7:30.")
+            ui.draft_changed(None)
+            ui.show_reply("Tomorrow at 7:30.", finished=True)
+            root.update_idletasks()
+
+            # Use a separate process, as a screen reader would. The Tk thread must pump messages.
+            program = """
+import json
+import sys
+from comtypes.client import CreateObject, GetModule
+
+uia = GetModule("UIAutomationCore.dll")
+automation = CreateObject(uia.CUIAutomation, interface=uia.IUIAutomation)
+elements = {}
+for handle in sys.argv[1:]:
+    element = automation.ElementFromHandle(int(handle))
+    elements[element.CurrentName] = [
+        element.CurrentControlType,
+        element.GetCurrentPropertyValue(uia.UIA_ValueValuePropertyId),
+        element.CurrentIsEnabled,
+    ]
+print(json.dumps(elements))
+"""
+            with subprocess.Popen(
+                [sys.executable, "-c", program, *map(str, (
+                    ui.copy_button.winfo_id(), ui.target_picker.winfo_id(), ui.reply_output.winfo_id()
+                ))],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            ) as reader:
+                def check_reader(attempt=0):
+                    if reader.poll() is None and attempt < 200:
+                        root.after(25, check_reader, attempt + 1)
+                    else:
+                        root.quit()
+
+                root.after(25, check_reader)
+                root.mainloop()
+                if reader.poll() is None:
+                    reader.kill()
+                output, errors = reader.communicate()
+                self.assertEqual(reader.returncode, 0, errors)
+            controls = json.loads(output)
+            self.assertEqual(controls["Copy reply"][0], 50000)
+            self.assertTrue(controls["Copy reply"][2])
+            self.assertEqual(controls["Target language"][:2], [50003, "English"])
+            self.assertEqual(controls["Translated reply · English"][:2], [50004, "Tomorrow at 7:30."])
 
 
 class TextTests(unittest.TestCase):

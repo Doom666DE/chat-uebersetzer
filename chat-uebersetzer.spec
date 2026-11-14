@@ -7,10 +7,11 @@ from comtypes.client import GetModule
 
 # Generate the Windows UI Automation bindings in a fresh build environment.
 GetModule("UIAutomationCore.dll")
+GetModule("oleacc.dll")
 
 a = Analysis(
     ["chat_uebersetzer.py"],
-    hiddenimports=["comtypes.gen.UIAutomationClient"],
+    hiddenimports=["comtypes.gen.UIAutomationClient", "comtypes.gen.Accessibility"],
     datas=[("LICENSE", "."), ("third-party", "third-party")],
 )
 

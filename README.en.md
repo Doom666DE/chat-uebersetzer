@@ -43,7 +43,7 @@ The EXE is built for **Windows x64** and includes Python. Discord and WhatsApp w
 
 4. Download and launch [**Chat-Uebersetzer-win-x64.exe**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe). Keep Ollama running while using the translator. The first translation can take longer while the model loads.
 
-The EXE is unsigned. Windows SmartScreen may show a warning for an unrecognized app. To check the download, compare the hash from the command below with [SHA256SUMS.txt](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/SHA256SUMS.txt). [Microsoft SmartScreen documentation](https://learn.microsoft.com/windows/apps/package-and-deploy/smartscreen-reputation)
+Starting with v0.5.12, the release EXE has an Authenticode signature from the self-signed **Doom666DE Chat-Uebersetzer** project certificate. Windows does not trust this certificate by default, so SmartScreen may still show a warning. Compare the hash from the command below with [SHA256SUMS.txt](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/SHA256SUMS.txt) for the signed EXE. [Microsoft code signing options](https://learn.microsoft.com/windows/apps/package-and-deploy/code-signing-options)
 
 ```powershell
 Get-FileHash -Algorithm SHA256 .\Chat-Uebersetzer-win-x64.exe
@@ -57,6 +57,12 @@ Get-FileHash -Algorithm SHA256 .\Chat-Uebersetzer-win-x64.exe
 4. **Translate and copy.** Click **Translate**, review or edit the result, then click **Copy reply**. Paste it into the chat using **Ctrl + V** and send it there.
 
 **Pause** pauses automatic selection capture. **Resume** turns it back on. Translations and suggestions can contain errors, so review the draft before sending.
+
+## Keyboard and screen readers
+
+Use **Tab** and **Shift + Tab** to move between controls. **Ctrl + Tab** switches between **Read** and **Write a reply**. **F6** focuses the translation in the current tab. In **Write a reply**, **Ctrl + Enter** translates the draft when the draft has focus, and **Ctrl + Shift + C** copies the finished reply.
+
+Windows receives accessible names, roles, and values for the main controls and text fields. The Tk interface currently provides limited line-by-line reading support for screen readers.
 
 ## Updates
 

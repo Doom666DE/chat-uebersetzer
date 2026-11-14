@@ -26,7 +26,7 @@ Die Screenshots verwenden Beispieltexte.
 
 Die App ist für **Windows x64** gebaut. Discord und WhatsApp wurden unter Windows 11 getestet. Die EXE bringt Python mit und nutzt die [Microsoft Visual C++ Laufzeit für x64](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist). Wenn sie auf deinem PC noch fehlt, installiere sie über Microsoft.
 
-Die EXE ist unsigniert. Windows SmartScreen kann den Download oder den Start als unbekannte App kennzeichnen. Die Release-Datei `SHA256SUMS.txt` enthält die Prüfsumme der EXE zur Kontrolle des Downloads. [Microsoft zu SmartScreen](https://learn.microsoft.com/windows/apps/package-and-deploy/smartscreen-reputation)
+Ab v0.5.12 trägt die Release-EXE eine Authenticode-Signatur mit dem selbstsignierten Projektzertifikat **Doom666DE Chat-Uebersetzer**. Windows vertraut diesem Zertifikat standardmäßig nicht. SmartScreen kann den Download oder den Start weiterhin als unbekannte App kennzeichnen. Die [SHA256SUMS.txt des Releases](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/SHA256SUMS.txt) enthält die Prüfsumme der signierten EXE. [Microsoft zu Codesignaturoptionen](https://learn.microsoft.com/windows/apps/package-and-deploy/code-signing-options)
 
 ## Bedienung
 
@@ -39,6 +39,12 @@ Die EXE ist unsigniert. Windows SmartScreen kann den Download oder den Start als
 Die letzte fertige Übersetzung bleibt beim Markieren weiterer Nachrichten erhalten. Ändert sich der Entwurf oder die Zielsprache, steht bis zur neuen Übersetzung **Vorherige Antwort** beim Text.
 
 Mit **Wie Oberfläche** übernehmen Lese- und Vorschlagssprache automatisch die Oberflächensprache. Feste Einstellungen bleiben beim Wechsel der Oberfläche und nach dem Neustart erhalten.
+
+## Tastatur und Screenreader
+
+Mit **Tab** und **Umschalt + Tab** wechselst du zwischen den Bedienelementen. **Strg + Tab** wechselt zwischen **Lesen** und **Antwort schreiben**. **F6** setzt den Fokus auf die Übersetzung im aktuellen Reiter. Im Antwortreiter startet **Strg + Eingabe** aus dem Entwurf die Übersetzung, und **Strg + Umschalt + C** kopiert die fertige Antwort.
+
+Windows erhält Namen, Rollen und Werte für die wichtigsten Bedienelemente und Textfelder. Die Tk-Oberfläche bietet Screenreadern derzeit keinen vollständigen zeilenweisen Lesemodus.
 
 ## Updates
 

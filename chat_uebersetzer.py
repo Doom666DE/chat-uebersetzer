@@ -28,6 +28,7 @@ import win32process
 
 import app_update
 from interface_text import TEXT as INTERFACE_TEXT
+from windows_accessibility import Accessibility
 
 INTERFACE_LANGUAGES = {"de": "Deutsch", "en": "English"}
 PREFERENCES = Path(os.environ["LOCALAPPDATA"]) / "Chat-Uebersetzer" / "interface-language.txt"
@@ -697,6 +698,7 @@ class TranslatorWindow:
         self.content_pickers = {}
         self.labels = []
         self.status_messages = {}
+        self.accessibility = Accessibility()
         self.showing_placeholder = True
         self.target = "en"
         self.suggestion_state = None
@@ -750,9 +752,15 @@ class TranslatorWindow:
     def label(self, widget, key):
         widget.configure(text=self.text(key))
         self.labels.append((widget, key))
+        role = "button" if isinstance(widget, (tk.Button, ttk.Button)) else "text"
+        self.accessibility.register(widget, role, lambda: str(widget["text"]))
         return widget
 
+    def choice_accessibility(self, widget, key):
+        self.accessibility.register(widget, "choice", lambda: self.text(key), read_value=widget.get)
+
     def set_status(self, widget, key=None, **fields):
+        first = widget not in self.status_messages
         self.status_messages[widget] = (key, fields)
         if "language" in fields:
             fields = {**fields, "language": self.text(fields["language"])}
@@ -760,6 +768,10 @@ class TranslatorWindow:
             error = fields["error"]
             fields = {**fields, "error": self.text(error.key, **error.fields)}
         widget.configure(text=self.text(key, **fields) if key else "")
+        if first:
+            self.accessibility.register(widget, "text", lambda: str(widget["text"]),
+                                        live=widget is not getattr(self, "reply_output_label", None))
+        self.accessibility.refresh(widget)
 
     def change_interface(self, _event=None):
         before = self.content_targets()
@@ -780,6 +792,8 @@ class TranslatorWindow:
         for widget, (key, fields) in self.status_messages.items():
             self.set_status(widget, key, **fields)
         self.refresh_content_languages(before)
+        for widget in self.accessibility.controls:
+            self.accessibility.refresh(widget)
         if self.suggestion_window is not None and before == self.content_targets():
             self.suggestion_window.title(self.text("suggestions"))
             self.suggestion_preview.configure(text=self.text("reply_to", preview=self.preview))
@@ -799,6 +813,7 @@ class TranslatorWindow:
     def change_content_language(self, kind):
         before = self.content_targets()
         self.content_languages[kind] = CONTENT_CHOICES[self.content_pickers[kind].current()]
+        self.accessibility.refresh(self.content_pickers[kind])
         try:
             path = PREFERENCES.with_name("content-languages.json")
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -837,6 +852,7 @@ class TranslatorWindow:
                                 activebackground="#404c62", activeforeground=TEXT,
                                 relief="flat", padx=10, pady=5, cursor="hand2")
         self.toggle.pack(side="right")
+        self.accessibility.register(self.toggle, "button", lambda: str(self.toggle["text"]))
         style = ttk.Style(self.root)
         style.theme_use("clam")
         style.configure("Chat.TNotebook", background=BACKGROUND, borderwidth=0)
@@ -852,6 +868,7 @@ class TranslatorWindow:
         self.interface_picker.set(INTERFACE_LANGUAGES[self.interface])
         self.interface_picker.pack(side="left", padx=6)
         self.interface_picker.bind("<<ComboboxSelected>>", self.change_interface)
+        self.choice_accessibility(self.interface_picker, "interface")
         self.build_update_controls(panel, settings)
         self.tabs = ttk.Notebook(panel, style="Chat.TNotebook")
         self.tabs.enable_traversal()
@@ -860,6 +877,9 @@ class TranslatorWindow:
         reply = tk.Frame(self.tabs, bg=BACKGROUND)
         self.tabs.add(reading, text=self.text("read"))
         self.tabs.add(reply, text=self.text("write"))
+        self.accessibility.register(self.tabs, "tabs", lambda: self.text("workspace"),
+                                    read_value=lambda: self.tabs.tab(self.tabs.select(), "text"))
+        self.tabs.bind("<<NotebookTabChanged>>", lambda _event: self.accessibility.refresh(self.tabs), add="+")
         self.status = tk.Label(reading,
                                font=("Segoe UI", 10), fg=ACCENT, bg=BACKGROUND,
                                anchor="w", justify="left")
@@ -874,15 +894,31 @@ class TranslatorWindow:
         self.set_status(self.ollama_status, "ollama_checking")
         panel.bind("<Configure>", lambda event: self.status.configure(wraplength=max(220, event.width - 40)))
         self.reader_font = font.Font(family="Segoe UI", size=12)
-        self.output = self.text_field(reading, "disabled")
+        self.output = self.text_field(reading, lambda: self.text("selection_translation"), "disabled")
         self.show_text(self.text("placeholder"))
         self.set_status(self.status, "instructions")
         self.build_reply(reply)
+        self.root.bind("<F6>", self.focus_result)
+        self.root.bind("<Control-Shift-c>", self.copy_by_keyboard)
+        self.root.bind("<Control-Shift-C>", self.copy_by_keyboard)
+
+    def focus_result(self, event):
+        if event.widget.winfo_toplevel() != self.root:
+            return
+        field = self.output if self.tabs.index("current") == 0 else self.reply_output
+        field.focus_set()
+        return "break"
+
+    def copy_by_keyboard(self, event):
+        if event.widget.winfo_toplevel() == self.root and self.tabs.index("current") == 1:
+            self.copy_reply()
+            return "break"
 
     def check_ollama(self):
         if self.ollama_check.instate(["disabled"]):
             return
         self.ollama_check.configure(state="disabled")
+        self.accessibility.refresh(self.ollama_check)
         self.set_status(self.ollama_status, "ollama_checking")
 
         def work():
@@ -910,6 +946,7 @@ class TranslatorWindow:
         self.update_actions = tk.Frame(panel, bg=BACKGROUND)
         self.update_details = self.release_details_label(self.update_actions)
         self.update_details.pack(fill="x", pady=(0, 4))
+        self.accessibility.register(self.update_details, "text", lambda: str(self.update_details["text"]))
         self.update_notes = self.label(ttk.Button(self.update_actions, command=self.show_update_notes), "update_notes")
         self.update_notes.pack(side="left")
         self.update_install = self.label(ttk.Button(self.update_actions, command=self.install_update), "update_install")
@@ -957,13 +994,17 @@ class TranslatorWindow:
         details = self.release_details_label(panel)
         details.configure(text=self.release_details(release))
         details.pack(fill="x", pady=(0, 8))
+        self.accessibility.register(details, "text", lambda: str(details["text"]))
         actions = tk.Frame(panel, bg=BACKGROUND)
         actions.pack(side="bottom", fill="x", pady=(10, 0))
-        ttk.Button(actions, text=self.text("update_open_release"),
-                   command=lambda: self.open_update_release(release, window)).pack(side="left")
+        open_release = ttk.Button(actions, text=self.text("update_open_release"),
+                                  command=lambda: self.open_update_release(release, window))
+        open_release.pack(side="left")
+        self.accessibility.register(open_release, "button", lambda: str(open_release["text"]))
         close = ttk.Button(actions, text=self.text("close"), command=self.close_update_notes)
         close.pack(side="right")
-        field = self.text_field(panel)
+        self.accessibility.register(close, "button", lambda: str(close["text"]))
+        field = self.text_field(panel, lambda: self.text("update_notes"))
         field.configure(undo=False)
         field.tag_configure("heading", font=("Segoe UI", 12, "bold"))
         notes = release.notes or self.text("update_notes_empty")
@@ -974,7 +1015,8 @@ class TranslatorWindow:
             else:
                 field.insert("end", ("• " + line[2:] if line.startswith(("- ", "* ")) else line) + "\n")
         field.configure(state="disabled")
-        close.focus_set()
+        self.accessibility.refresh(field)
+        field.focus_set()
         window.grab_set()
 
     def open_update_release(self, release, window):
@@ -996,6 +1038,8 @@ class TranslatorWindow:
         self.update_state = "checking"
         self.update_check.configure(state="disabled")
         self.update_install.configure(state="disabled")
+        self.accessibility.refresh(self.update_check)
+        self.accessibility.refresh(self.update_install)
         self.set_status(self.update_status, "update_checking")
 
         def work():
@@ -1017,6 +1061,8 @@ class TranslatorWindow:
         self.update_state = "downloading"
         self.update_check.configure(state="disabled")
         self.update_install.configure(state="disabled")
+        self.accessibility.refresh(self.update_check)
+        self.accessibility.refresh(self.update_install)
         self.update_cancel.clear()
         self.set_status(self.update_status, "update_downloading")
 
@@ -1043,6 +1089,7 @@ class TranslatorWindow:
                 key = "update_available" if portable else "update_source"
                 self.set_status(self.update_status, key, version=self.available_update.tag)
                 self.update_details.configure(text=self.release_details(release))
+                self.accessibility.refresh(self.update_details)
                 self.update_actions.pack(fill="x", pady=(4, 0), before=self.tabs)
                 if portable:
                     self.update_install.pack(side="right")
@@ -1070,6 +1117,8 @@ class TranslatorWindow:
         self.update_state = "idle"
         self.update_check.configure(state="normal")
         self.update_install.configure(state="normal")
+        self.accessibility.refresh(self.update_check)
+        self.accessibility.refresh(self.update_install)
         if self.closing_after_download:
             self.close()
             return True
@@ -1078,20 +1127,30 @@ class TranslatorWindow:
     def has_reply_draft(self):
         return any(field.get("1.0", "end-1c").strip() for field in (self.draft, self.reply_output))
 
-    def text_field(self, parent, state="normal", row=None):
+    def text_field(self, parent, read_name, state="normal", row=None):
         reader = tk.Frame(parent, bg=SURFACE)
         if row is None:
             reader.pack(fill="both", expand=True)
         else:
             reader.grid(row=row, column=0, sticky="nsew")
-        scrollbar = tk.Scrollbar(reader, orient="vertical")
+        scrollbar = tk.Scrollbar(reader, orient="vertical", takefocus=False)
         scrollbar.pack(side="right", fill="y")
         field = tk.Text(reader, font=self.reader_font, bg=SURFACE, fg=TEXT, insertbackground=TEXT,
                         selectbackground="#435581", wrap="word", borderwidth=0, padx=11, pady=9,
-                        width=1, height=1, spacing3=4, state=state, yscrollcommand=scrollbar.set, undo=True)
+                        width=1, height=1, spacing3=4, state=state, yscrollcommand=scrollbar.set, undo=True,
+                        takefocus=True)
         field.pack(fill="both", expand=True)
         scrollbar.config(command=field.yview)
+        self.accessibility.register(field, "edit", read_name, read_value=lambda: field.get("1.0", "end-1c"))
+        field.bind("<KeyRelease>", lambda _event: self.accessibility.refresh(field), add="+")
+        field.bind("<Tab>", lambda _event: self.move_focus(field.tk_focusNext()))
+        field.bind("<Shift-Tab>", lambda _event: self.move_focus(field.tk_focusPrev()))
         return field
+
+    @staticmethod
+    def move_focus(widget):
+        widget.focus_set()
+        return "break"
 
     def content_picker(self, parent, kind, label):
         row = tk.Frame(parent, bg=BACKGROUND)
@@ -1100,6 +1159,7 @@ class TranslatorWindow:
         picker.set(self.text(self.content_languages[kind]))
         picker.pack(side="left", padx=6)
         picker.bind("<<ComboboxSelected>>", lambda _event: self.change_content_language(kind))
+        self.choice_accessibility(picker, label)
         self.content_pickers[kind] = picker
         return row
 
@@ -1114,7 +1174,7 @@ class TranslatorWindow:
         self.suggest_button.pack(anchor="w", pady=(4, 0))
         self.label(tk.Label(header, font=("Segoe UI", 10, "bold"), fg=TEXT, bg=BACKGROUND), "draft").pack(
             anchor="w", pady=(5, 0))
-        self.draft = self.text_field(parent, row=1)
+        self.draft = self.text_field(parent, lambda: self.text("draft"), row=1)
         self.draft.bind("<<Modified>>", self.draft_changed)
         self.draft.bind("<Control-Return>", self.start_reply)
         actions = tk.Frame(parent, bg=BACKGROUND)
@@ -1125,11 +1185,12 @@ class TranslatorWindow:
         self.target_picker.set(self.text(self.target or "choose_target"))
         self.target_picker.pack(side="left", padx=(6, 7))
         self.target_picker.bind("<<ComboboxSelected>>", self.select_reply_language)
+        self.choice_accessibility(self.target_picker, "target")
         self.reply_translate = self.label(ttk.Button(actions, command=self.start_reply, state="disabled"), "translate")
         self.reply_translate.pack(side="left")
         self.language_status = self.release_details_label(parent)
         self.language_status.grid(row=3, column=0, sticky="ew", pady=(2, 3))
-        self.reply_output = self.text_field(parent, "disabled", row=4)
+        self.reply_output = self.text_field(parent, self.reply_display_name, "disabled", row=4)
         output_header = tk.Frame(parent, bg=BACKGROUND)
         output_header.grid(row=5, column=0, sticky="ew", pady=(4, 0))
         self.copy_button = self.label(ttk.Button(output_header, command=self.copy_reply, state="disabled"), "copy")
@@ -1142,6 +1203,9 @@ class TranslatorWindow:
         self.reply_status = self.release_details_label(parent)
         self.reply_status.configure(fg=ACCENT)
         self.reply_status.grid(row=6, column=0, sticky="ew")
+
+    def reply_display_name(self):
+        return str(self.reply_output_label["text"]) if hasattr(self, "reply_output_label") else self.text("translated_reply")
 
     def start_suggestions(self):
         if self.suggestion_window is not None:
@@ -1170,6 +1234,7 @@ class TranslatorWindow:
             self.suggestion_panel, text=self.text("reply_to", preview=preview), font=("Segoe UI", 10),
             fg=MUTED, bg=BACKGROUND, wraplength=365, justify="left")
         self.suggestion_preview.pack(anchor="w")
+        self.accessibility.register(self.suggestion_preview, "text", lambda: str(self.suggestion_preview["text"]))
         self.suggestion_body = tk.Frame(self.suggestion_panel, bg=BACKGROUND)
         self.suggestion_body.pack(fill="both", expand=True)
         window.update_idletasks()
@@ -1181,6 +1246,7 @@ class TranslatorWindow:
     def set_suggestion_context(self, text):
         self.suggestion_context = text
         self.suggest_button.configure(state="normal" if text else "disabled")
+        self.accessibility.refresh(self.suggest_button)
 
     def request_suggestions(self):
         self.suggestion_cancel.set()
@@ -1195,13 +1261,17 @@ class TranslatorWindow:
         self.suggestion_state = (kind, value)
         for child in self.suggestion_body.winfo_children():
             child.destroy()
-        if kind == "working":
-            tk.Label(self.suggestion_body, text=self.text("suggest_working"),
-                     fg=ACCENT, bg=BACKGROUND, font=("Segoe UI", 10)).pack(anchor="w", pady=(12, 0))
-        elif kind == "error":
-            tk.Label(self.suggestion_body, text=self.text(value.key, **value.fields), fg=ACCENT, bg=BACKGROUND, wraplength=365,
-                     justify="left", font=("Segoe UI", 10)).pack(anchor="w", pady=(12, 0))
-            ttk.Button(self.suggestion_body, text=self.text("close"), command=self.close_suggestions).pack(anchor="w", pady=(8, 0))
+        first_action = None
+        if kind in ("working", "error"):
+            text = self.text("suggest_working") if kind == "working" else self.text(value.key, **value.fields)
+            status = tk.Label(self.suggestion_body, text=text, fg=ACCENT, bg=BACKGROUND, wraplength=365,
+                              justify="left", font=("Segoe UI", 10))
+            status.pack(anchor="w", pady=(12, 0))
+            self.accessibility.register(status, "text", lambda: text, live=True)
+            if kind == "error":
+                first_action = ttk.Button(self.suggestion_body, text=self.text("close"), command=self.close_suggestions)
+                first_action.pack(anchor="w", pady=(8, 0))
+                self.accessibility.register(first_action, "button", lambda: str(first_action["text"]))
         else:
             for tone, reply in zip(SUGGESTION_TONES, value):
                 card = tk.Frame(self.suggestion_body, bg=SURFACE, padx=10, pady=8)
@@ -1209,8 +1279,15 @@ class TranslatorWindow:
                 tk.Label(card, text=self.text(tone), fg=ACCENT, bg=SURFACE, font=("Segoe UI", 10, "bold")).pack(anchor="w")
                 tk.Label(card, text=reply, fg=TEXT, bg=SURFACE, wraplength=345, justify="left",
                          font=("Segoe UI", 10)).pack(anchor="w", pady=(4, 6))
-                ttk.Button(card, text=self.text("use"), command=lambda text=reply: self.use_suggestion(text)).pack(anchor="w")
+                action = ttk.Button(card, text=self.text("use"), command=lambda text=reply: self.use_suggestion(text))
+                action.pack(anchor="w")
+                self.accessibility.register(action, "button",
+                                            lambda tone=tone, reply=reply: self.text("use_suggestion", tone=self.text(tone), reply=reply))
+                if first_action is None:
+                    first_action = action
         self.suggestion_window.geometry("")
+        if first_action is not None and self.suggestion_window.focus_displayof() == self.suggestion_window:
+            first_action.focus_set()
 
     def use_suggestion(self, text):
         self.draft.edit_separator()
@@ -1233,6 +1310,7 @@ class TranslatorWindow:
         self.reply_output.edit_reset()
         self.reply_output.configure(state="normal" if finished else "disabled")
         self.copy_button.configure(state="normal" if finished else "disabled")
+        self.accessibility.refresh(self.copy_button)
         self.reply_output_language = self.target if finished else None
         self.reply_output_source = self.reply_source if finished else ""
         self.refresh_reply_output_label()
@@ -1240,10 +1318,11 @@ class TranslatorWindow:
     def refresh_reply_output_label(self):
         if self.reply_output_language is None:
             self.set_status(self.reply_output_label, "translated_reply")
-            return
-        current = self.reply_output_language == self.target and self.reply_output_source == self.reply_source
-        key = "translated_reply_language" if current else "previous_reply_language"
-        self.set_status(self.reply_output_label, key, language=self.reply_output_language)
+        else:
+            current = self.reply_output_language == self.target and self.reply_output_source == self.reply_source
+            key = "translated_reply_language" if current else "previous_reply_language"
+            self.set_status(self.reply_output_label, key, language=self.reply_output_language)
+        self.accessibility.refresh(self.reply_output)
 
     def reset_reply(self):
         self.reply_cancel.set()
@@ -1259,6 +1338,7 @@ class TranslatorWindow:
     def update_reply_button(self):
         ready = self.reply_source and self.target is not None and not self.language_pending and not self.reply_working
         self.reply_translate.configure(state="normal" if ready else "disabled")
+        self.accessibility.refresh(self.reply_translate)
 
     def select_reply_language(self, _event):
         target = tuple(REPLY_LANGUAGES)[self.target_picker.current()]
@@ -1288,11 +1368,13 @@ class TranslatorWindow:
 
     def refresh_reply_target(self):
         self.target_picker.set(self.text(self.target or "choose_target"))
+        self.accessibility.refresh(self.target_picker)
 
     def draft_changed(self, _event):
         if not self.draft.edit_modified():
             return
         self.draft.edit_modified(False)
+        self.accessibility.refresh(self.draft)
         source = self.draft.get("1.0", "end-1c").strip()
         if source != self.reply_source:
             self.reply_source = source
@@ -1312,7 +1394,7 @@ class TranslatorWindow:
         if self.reply_output_language is None:
             self.show_reply("")
         self.reply_working = True
-        self.reply_translate.configure(state="disabled")
+        self.update_reply_button()
         self.set_status(self.reply_status, "reply_working", language=self.target)
         self.jobs.put(("reply", self.reply_number, source, self.reply_cancel, self.target))
         return "break"
@@ -1345,6 +1427,7 @@ class TranslatorWindow:
             self.output.delete("1.0", "end")
             self.output.insert("1.0", text)
         self.output.configure(state="disabled")
+        self.accessibility.refresh(self.output)
 
     def toggle_selection(self):
         if self.enabled.is_set():
@@ -1360,6 +1443,7 @@ class TranslatorWindow:
             self.enabled.set()
             self.toggle.configure(text=self.text("pause"))
             self.set_status(self.status, "instructions")
+        self.accessibility.refresh(self.toggle)
 
     def arrange(self, chat):
         if self.dock and self.dock[0] != chat:
@@ -1496,12 +1580,14 @@ class TranslatorWindow:
                 key, fields = data
                 self.set_status(self.ollama_status, key, **fields)
                 self.ollama_check.configure(state="normal")
+                self.accessibility.refresh(self.ollama_check)
             elif kind == "watch_error":
                 self.enabled.clear()
                 self.cancel_job.set()
                 if self.language_pending:
                     self.apply_detected_language(None)
                 self.toggle.configure(state="disabled")
+                self.accessibility.refresh(self.toggle)
                 self.set_status(self.status, "watch_error")
             elif kind.startswith("update_"):
                 if self.update_event(kind, data):
