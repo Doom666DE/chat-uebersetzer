@@ -1,0 +1,17 @@
+name: Bug report / Fehler melden
+description: Report a problem with Chat Translator / Melde ein Problem mit dem Chat-Übersetzer
+body:
+  - type: input
+    id: environment
+    attributes:
+      label: App version, Windows version and chat app / App-Version, Windows-Version und Chat-App
+      placeholder: v0.5.11, Windows 11, WhatsApp Desktop
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What happened, and what did you expect? / Was ist passiert, und was hast du erwartet?
+      description: Include the steps and any error message. Use sample text and remove personal details from screenshots. / Beschreibe die Schritte und etwaige Fehlermeldungen. Verwende Beispieltexte und entferne persönliche Daten aus Screenshots.
+    validations:
+      required: true

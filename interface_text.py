@@ -21,6 +21,8 @@ TEXT = {
     "target": ("Zielsprache", "Target language"),
     "translate": ("Übersetzen", "Translate"),
     "translated_reply": ("Übersetzte Antwort", "Translated reply"),
+    "translated_reply_language": ("Übersetzte Antwort · {language}", "Translated reply · {language}"),
+    "previous_reply_language": ("Vorherige Antwort · {language}", "Previous reply · {language}"),
     "copy": ("Antwort kopieren", "Copy reply"),
     "de": ("Deutsch", "German"),
     "en": ("Englisch", "English"),
@@ -58,6 +60,9 @@ TEXT = {
     "redirect": ("Ollama hat eine Weiterleitung gesendet.", "Ollama returned a redirect."),
     "ollama_http": ("Ollama konnte die Anfrage nicht verarbeiten (HTTP {code}).", "Ollama could not process the request (HTTP {code})."),
     "ollama_unavailable": ("Ollama antwortet nicht. Öffne Ollama und versuche es erneut.", "Ollama is not responding. Open Ollama and try again."),
+    "ollama_check": ("Ollama prüfen", "Check Ollama"),
+    "ollama_checking": ("Prüfe Ollama …", "Checking Ollama…"),
+    "ollama_ready": ("Ollama bereit", "Ollama ready"),
     "model_missing": (
         "Das Modell fehlt. Führe in PowerShell ollama pull {model} aus.",
         "The model is missing. Run ollama pull {model} in PowerShell.",

@@ -1,14 +1,24 @@
 # Chat Translator for Windows
 
-[**Download the Windows EXE**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) · [Latest release](https://github.com/Doom666DE/chat-uebersetzer/releases/latest) · [Deutsch](README.md)
+Select a message in **Discord Desktop** or **WhatsApp Desktop** and read the translation beside it. Write, translate, and copy replies when you need them. Ollama processes the text locally on your PC.
 
-Chat Translator works alongside Discord Desktop and WhatsApp Desktop. Choose German, English, Polish, or Turkish separately for incoming translations, reply suggestions, and outgoing replies. Ollama runs the language model on your PC.
+**Windows x64 · English, German, Polish and Turkish · Ollama model download of about 2.5 GB**
+
+[**Download for Windows (.exe)**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) · [Deutsch](README.md) · [Release notes](https://github.com/Doom666DE/chat-uebersetzer/releases/latest)
+
+## Quick start
+
+1. Install and start [Ollama for Windows](https://ollama.com/download/windows).
+2. Open PowerShell and run `ollama pull qwen3:4b-instruct`.
+3. Open the downloaded EXE. When you see **Ollama ready**, select text in Discord or WhatsApp.
 
 Choose **English** from the **Interface** menu at the top of the window. On a German interface, the menu is called **Oberfläche**. **Reading language** and **Suggestion language** follow the interface by default, so both use English when the interface is in English. The app remembers your choices.
 
-| Read a message | Translate a reply | Pick a suggestion |
-| --- | --- | --- |
-| <img src="docs/screenshots/read.png" alt="Read tab showing an English translation" width="300"> | <img src="docs/screenshots/write-a-reply.png" alt="English draft and translated reply with separate suggestion and target languages" width="300"> | <img src="docs/screenshots/reply-suggestions.png" alt="Three reply suggestions in English" width="250"> |
+## See it in action
+
+![Selected Polish example message beside its English translation in v0.5.11](docs/screenshots/read.png)
+
+[Write and copy a reply](docs/screenshots/write-a-reply.png) · [See three reply suggestions](docs/screenshots/reply-suggestions.png)
 
 ## Set up Ollama
 

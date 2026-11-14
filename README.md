@@ -1,22 +1,28 @@
 # Chat-Übersetzer für Windows
 
-[**Windows-EXE herunterladen**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) · [**Einrichtung auf Deutsch**](Ollama-Anleitung.md) · [**English setup guide**](README.en.md) · [Aktueller Release](https://github.com/Doom666DE/chat-uebersetzer/releases/latest)
+Markiere eine Nachricht in **Discord Desktop** oder **WhatsApp Desktop** und lies die Übersetzung daneben. Du kannst auch eine Antwort schreiben, übersetzen und in den Chat kopieren. Die Texte verarbeitet Ollama lokal auf deinem PC.
 
-Übersetze ausgewählte Nachrichten aus Discord Desktop und WhatsApp Desktop. Für eingehende Übersetzungen, Antwortvorschläge und fertige Antworten kannst du unabhängig voneinander Deutsch, Englisch, Polnisch oder Türkisch wählen. Ollama läuft auf deinem PC.
+**Windows x64 · Deutsch, Englisch, Polnisch und Türkisch · Ollama-Modell mit ca. 2,5 GB**
+
+[**Für Windows herunterladen (.exe)**](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) · [English](README.en.md) · [Versionshinweise](https://github.com/Doom666DE/chat-uebersetzer/releases/latest)
+
+## Schnellstart
+
+1. Installiere [Ollama für Windows](https://ollama.com/download/windows) und starte es.
+2. Öffne PowerShell und lade das Modell mit `ollama pull qwen3:4b-instruct`.
+3. Starte die heruntergeladene EXE. Sobald **Ollama bereit** angezeigt wird, markiere Text in Discord oder WhatsApp.
+
+[Ausführliche Einrichtung und Hilfe bei Fehlern](Ollama-Anleitung.md)
 
 ## So sieht die App aus
 
-| Nachrichten lesen | Antworten übersetzen | Antworten vorschlagen |
-| --- | --- | --- |
-| <img src="docs/screenshots/lesen.png" alt="Reiter Lesen mit einer deutschen Übersetzung" width="300"> | <img src="docs/screenshots/antwort-schreiben.png" alt="Deutscher Entwurf und polnische Übersetzung im Reiter Antwort schreiben" width="300"> | <img src="docs/screenshots/antwortvorschlaege.png" alt="Dialog mit drei deutschen Antwortvorschlägen und Übernehmen-Schaltflächen" width="250"> |
+![Markierte englische Beispielnachricht neben der deutschen Übersetzung in v0.5.11](docs/screenshots/lesen.png)
 
-Die Screenshots zeigen Beispielnachrichten.
+[Antwort schreiben und kopieren](docs/screenshots/antwort-schreiben.png) · [Drei Antwortvorschläge ansehen](docs/screenshots/antwortvorschlaege.png)
 
-## Download und Einrichtung
+Die Screenshots verwenden Beispieltexte.
 
-1. Lade die [Windows-EXE](https://github.com/Doom666DE/chat-uebersetzer/releases/latest/download/Chat-Uebersetzer-win-x64.exe) herunter und speichere sie in einem Ordner deiner Wahl.
-2. Installiere [Ollama für Windows](https://ollama.com/download/windows) und lade das Modell nach der [Schritt-für-Schritt-Anleitung](Ollama-Anleitung.md).
-3. Starte **Chat-Uebersetzer-win-x64.exe**, sobald Ollama läuft und das Modell heruntergeladen ist.
+## Hinweise zum Download
 
 Die App ist für **Windows x64** gebaut. Discord und WhatsApp wurden unter Windows 11 getestet. Die EXE bringt Python mit und nutzt die [Microsoft Visual C++ Laufzeit für x64](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist). Wenn sie auf deinem PC noch fehlt, installiere sie über Microsoft.
 
@@ -29,6 +35,8 @@ Die EXE ist unsigniert. Windows SmartScreen kann den Download oder den Start als
 - **Antwort schreiben.** Tippe deinen Entwurf. Bei einer markierten Nachricht wählt die App die erkannte **Zielsprache** aus Deutsch, Englisch, Polnisch und Türkisch. Bei unklarer Sprache wählst du das Ziel selbst.
 - **Antwortvorschläge.** Wähle die **Vorschlagssprache** und klicke auf **3 Antworten vorschlagen**, sobald die markierte Nachricht übersetzt ist. Mit **Übernehmen** setzt du einen Vorschlag in den Entwurf.
 - **Abschicken.** Klicke auf **Übersetzen**, prüfe die Fassung und wähle **Antwort kopieren**. Füge sie mit **Strg + V** in Discord oder WhatsApp ein und sende sie dort selbst.
+
+Die letzte fertige Übersetzung bleibt beim Markieren weiterer Nachrichten erhalten. Ändert sich der Entwurf oder die Zielsprache, steht bis zur neuen Übersetzung **Vorherige Antwort** beim Text.
 
 Mit **Wie Oberfläche** übernehmen Lese- und Vorschlagssprache automatisch die Oberflächensprache. Feste Einstellungen bleiben beim Wechsel der Oberfläche und nach dem Neustart erhalten.
 

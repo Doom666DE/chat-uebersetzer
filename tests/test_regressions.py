@@ -52,7 +52,8 @@ class UpdateTests(unittest.TestCase):
 
 
 class ReplyLanguageTests(unittest.TestCase):
-    def test_unknown_selection_requires_explicit_target(self):
+    @contextmanager
+    def window(self, scale=None):
         with (
             TemporaryDirectory() as directory,
             patch.object(app, "PREFERENCES", Path(directory) / "interface-language.txt"),
@@ -62,28 +63,87 @@ class ReplyLanguageTests(unittest.TestCase):
             patch.object(app, "is_foreground", return_value=True),
         ):
             root = tk.Tk()
+            if scale is not None:
+                root.tk.call("tk", "scaling", scale)
             ui = app.TranslatorWindow(root)
             try:
-                ui.start_translation(1, "Cześć!")
-                ui.apply_detected_language("pl")
-                self.assertEqual(ui.target, "pl")
-                ui.start_translation(1, "OK")
-                ui.apply_detected_language(None)
-                ui.draft.insert("1.0", "I will call tomorrow.")
-                ui.start_reply()
-                self.assertIsNone(ui.target)
-                self.assertTrue(ui.reply_translate.instate(["disabled"]))
-                self.assertFalse(any(job[0] == "reply" for job in ui.jobs.queue))
-                ui.target_picker.current(list(app.REPLY_LANGUAGES).index("de"))
-                ui.select_reply_language(None)
-                ui.start_reply()
-                self.assertEqual(ui.jobs.queue[-1][-1], "de")
-                ui.apply_detected_language("tr")
-                self.assertEqual(ui.target, "de")
+                yield root, ui
             finally:
                 for pending in root.tk.splitlist(root.tk.call("after", "info")):
                     root.after_cancel(pending)
                 ui.close()
+
+    def test_unknown_selection_requires_explicit_target(self):
+        with self.window() as (_, ui):
+            ui.start_translation(1, "Cześć!")
+            ui.apply_detected_language("pl")
+            self.assertEqual(ui.target, "pl")
+            ui.start_translation(1, "OK")
+            ui.apply_detected_language(None)
+            ui.draft.insert("1.0", "I will call tomorrow.")
+            ui.start_reply()
+            self.assertIsNone(ui.target)
+            self.assertTrue(ui.reply_translate.instate(["disabled"]))
+            self.assertFalse(any(job[0] == "reply" for job in ui.jobs.queue))
+            ui.target_picker.current(list(app.REPLY_LANGUAGES).index("de"))
+            ui.select_reply_language(None)
+            ui.start_reply()
+            self.assertEqual(ui.jobs.queue[-1][-1], "de")
+            ui.apply_detected_language("tr")
+            self.assertEqual(ui.target, "de")
+
+    def test_edited_reply_survives_selection_and_failed_replacement(self):
+        with self.window() as (_, ui):
+            ui.start_translation(1, "Cześć!")
+            ui.apply_detected_language("pl")
+            ui.draft.insert("1.0", "Hallo")
+            ui.start_reply()
+            ui.events.put(("result", "reply", ui.reply_number, "Cześć"))
+            ui.read_events()
+            ui.reply_output.insert("end-1c", " 😊")
+            ui.start_translation(1, "Jak się masz?")
+            ui.apply_detected_language("pl")
+            self.assertEqual(ui.status_messages[ui.reply_output_label][0], "translated_reply_language")
+            ui.start_translation(1, "Merhaba!")
+            ui.apply_detected_language("tr")
+            self.assertEqual(ui.status_messages[ui.reply_output_label], ("previous_reply_language", {"language": "pl"}))
+            with patch.object(app, "win32clipboard") as clipboard:
+                ui.copy_button.invoke()
+                clipboard.SetClipboardText.assert_called_once_with("Cześć 😊", app.win32con.CF_UNICODETEXT)
+            ui.draft.replace("1.0", "end-1c", "Bis später!")
+            ui.start_reply()
+            request = ui.reply_number
+            ui.events.put(("partial", "reply", request, "Sonra"))
+            ui.events.put(("error", "reply", request, app.UserError("translate_failed")))
+            ui.read_events()
+            self.assertEqual(ui.reply_output.get("1.0", "end-1c"), "Cześć 😊")
+            ui.start_reply()
+            ui.events.put(("result", "reply", request, "stale"))
+            ui.events.put(("result", "reply", ui.reply_number, "Sonra görüşürüz!"))
+            ui.read_events()
+            self.assertEqual(ui.reply_output.get("1.0", "end-1c"), "Sonra görüşürüz!")
+            self.assertEqual(ui.status_messages[ui.reply_output_label], ("translated_reply_language", {"language": "tr"}))
+
+    def test_copy_button_fits_at_minimum_window_size(self):
+        for scale in (1.33, 2.0):
+            with self.window(scale=scale) as (root, ui):
+                width, height = root.minsize()
+                root.geometry(f"{width}x{height}")
+                ui.tabs.select(1)
+                for language in ("de", "en"):
+                    ui.interface_picker.set(app.INTERFACE_LANGUAGES[language])
+                    ui.change_interface()
+                    ui.set_reply_target("pl")
+                    ui.show_reply("Cześć!", finished=True)
+                    ui.set_reply_target(None)
+                    ui.set_status(ui.language_status, "unknown")
+                    ui.set_status(ui.reply_status, "copied")
+                    root.update_idletasks()
+                    with self.subTest(scale=scale, language=language):
+                        self.assertTrue(ui.copy_button.winfo_viewable())
+                        bottom = ui.copy_button.winfo_rooty() + ui.copy_button.winfo_height()
+                        self.assertLessEqual(bottom, root.winfo_rooty() + root.winfo_height())
+                        self.assertGreaterEqual(ui.reply_output.winfo_height(), 30)
 
 
 class TextTests(unittest.TestCase):
